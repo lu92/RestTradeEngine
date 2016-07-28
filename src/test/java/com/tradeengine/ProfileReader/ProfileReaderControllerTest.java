@@ -95,14 +95,15 @@ public class ProfileReaderControllerTest
         final CustomerDto CUSTOMER_DTO = new CustomerDto(new Message("customer doesn't exist!", Message.Status.FAILURE), null);
         Mockito.when(profileReaderServiceMock.getCustomer(Mockito.any(Long.class))).thenReturn(CUSTOMER_DTO);
 
-        String RSAsString = mockMvc.perform(get("/ProfileReader/1"))
+        String RS = mockMvc.perform(get("/ProfileReader/1"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.message.message", equalTo("customer doesn't exist!")))
                 .andExpect(jsonPath("$.message.status", equalTo(Message.Status.FAILURE.toString())))
                 .andExpect(jsonPath("$.customer", isEmptyOrNullString()))
                 .andReturn().getResponse().getContentAsString();
-        logger.info("RS = " + RSAsString);
+
+        logger.info("RS = " + RS);
     }
 
     @Test
@@ -125,7 +126,7 @@ public class ProfileReaderControllerTest
         final CustomerDtoList customerDtoList = new CustomerDtoList(new Message("Customer's list is filled", Message.Status.SUCCESS), Arrays.asList(CUSTOMER, CUSTOMER_2));
         Mockito.when(profileReaderServiceMock.getCustomerList()).thenReturn(customerDtoList);
 
-        String RSAsString = mockMvc.perform(get("/ProfileReader"))
+        String RS = mockMvc.perform(get("/ProfileReader"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.message.message", equalTo("Customer's list is filled")))
@@ -156,7 +157,8 @@ public class ProfileReaderControllerTest
                 .andExpect(jsonPath("$.customerList[1].points", is(CUSTOMER_2.getPoints().intValue())))
                 .andExpect(jsonPath("$.customerList[1].tierLevel", is(CUSTOMER_2.getTierLevel().toString())))
                 .andReturn().getResponse().getContentAsString();
-        logger.info("RS = " + RSAsString);
+
+        logger.info("RS = " + RS);
     }
 
     @Test
@@ -165,10 +167,10 @@ public class ProfileReaderControllerTest
         final CustomerDto CUSTOMER_DTO = new CustomerDto(new Message("customer has been added!", Message.Status.SUCCESS), CUSTOMER);
         Mockito.when(profileReaderServiceMock.createCustomer(CREATE_CUSTOMER_DTO)).thenReturn(CUSTOMER_DTO);
 
-        String content = TestUtils.convertObjectToJsonText(CREATE_CUSTOMER_DTO);
-        logger.info("RQ = " + content);
+        String RQ = TestUtils.convertObjectToJsonText(CREATE_CUSTOMER_DTO);
+        logger.info("RQ = " + RQ);
 
-        String RSAsString = mockMvc.perform(post("/ProfileReader")
+        String RS = mockMvc.perform(post("/ProfileReader")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(TestUtils.convertObjectToJsonText(CREATE_CUSTOMER_DTO)))
                 .andExpect(status().isOk())
@@ -188,7 +190,8 @@ public class ProfileReaderControllerTest
                 .andExpect(jsonPath("$.customer.points", is(CUSTOMER.getPoints().intValue())))
                 .andExpect(jsonPath("$.customer.tierLevel", is(CUSTOMER.getTierLevel().toString())))
                 .andReturn().getResponse().getContentAsString();
-        logger.info("RS = " + RSAsString);
+
+        logger.info("RS = " + RS);
     }
 
     @Test
@@ -197,10 +200,10 @@ public class ProfileReaderControllerTest
         final CustomerDto CUSTOMER_DTO = new CustomerDto(new Message("customer already exists!", Message.Status.FAILURE), null);
         Mockito.when(profileReaderServiceMock.createCustomer(CREATE_CUSTOMER_DTO)).thenReturn(CUSTOMER_DTO);
 
-        String content = TestUtils.convertObjectToJsonText(CREATE_CUSTOMER_DTO);
-        logger.info("RQ = " + content);
+        String RQ = TestUtils.convertObjectToJsonText(CREATE_CUSTOMER_DTO);
+        logger.info("RQ = " + RQ);
 
-        String RSAsString = mockMvc.perform(post("/ProfileReader")
+        String RS = mockMvc.perform(post("/ProfileReader")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(TestUtils.convertObjectToJsonText(CUSTOMER)))
                 .andExpect(status().isOk())
@@ -209,7 +212,8 @@ public class ProfileReaderControllerTest
                 .andExpect(jsonPath("$.message.status", equalTo(CUSTOMER_DTO.getMessage().getStatus().toString())))
                 .andExpect(jsonPath("$.customer", isEmptyOrNullString()))
                 .andReturn().getResponse().getContentAsString();
-        logger.info("RS = " + RSAsString);
+
+        logger.info("RS = " + RS);
     }
 
     @Test
@@ -218,7 +222,7 @@ public class ProfileReaderControllerTest
         final CustomerDto CUSTOMER_DTO = new CustomerDto(new Message("customer has been deleted!", Message.Status.SUCCESS), null);
         Mockito.when(profileReaderServiceMock.deleteCustomer(Matchers.anyLong())).thenReturn(CUSTOMER_DTO);
 
-        String RSAsString = mockMvc.perform(delete("/ProfileReader/1")
+        String RS = mockMvc.perform(delete("/ProfileReader/1")
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -226,7 +230,8 @@ public class ProfileReaderControllerTest
                 .andExpect(jsonPath("$.message.status", equalTo(CUSTOMER_DTO.getMessage().getStatus().toString())))
                 .andExpect(jsonPath("$.customer", isEmptyOrNullString()))
                 .andReturn().getResponse().getContentAsString();
-        logger.info("RS = " + RSAsString);
+
+        logger.info("RS = " + RS);
     }
 
     @Test
@@ -235,7 +240,7 @@ public class ProfileReaderControllerTest
         final CustomerDto CUSTOMER_DTO = new CustomerDto(new Message("customer doesn't exist!", Message.Status.FAILURE), null);
         Mockito.when(profileReaderServiceMock.deleteCustomer(Matchers.anyLong())).thenReturn(CUSTOMER_DTO);
 
-        String RSAsString = mockMvc.perform(delete("/ProfileReader/1")
+        String RS = mockMvc.perform(delete("/ProfileReader/1")
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -243,7 +248,8 @@ public class ProfileReaderControllerTest
                 .andExpect(jsonPath("$.message.status", equalTo(CUSTOMER_DTO.getMessage().getStatus().toString())))
                 .andExpect(jsonPath("$.customer", isEmptyOrNullString()))
                 .andReturn().getResponse().getContentAsString();
-        logger.info("RS = " + RSAsString);
+
+        logger.info("RS = " + RS);
     }
 
     @Test
@@ -252,7 +258,7 @@ public class ProfileReaderControllerTest
         final CustomerDto CUSTOMER_DTO = new CustomerDto(new Message("customer has been updated!", Message.Status.SUCCESS), CUSTOMER_2);
         Mockito.when(profileReaderServiceMock.updateCustomer(CUSTOMER)).thenReturn(CUSTOMER_DTO);
 
-        String RSAsString = mockMvc.perform(put("/ProfileReader")
+        String RS = mockMvc.perform(put("/ProfileReader")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(TestUtils.convertObjectToJsonText(CUSTOMER)))
                 .andExpect(status().isOk())
@@ -272,7 +278,8 @@ public class ProfileReaderControllerTest
                 .andExpect(jsonPath("$.customer.points", is(CUSTOMER_2.getPoints().intValue())))
                 .andExpect(jsonPath("$.customer.tierLevel", is(CUSTOMER_2.getTierLevel().toString())))
                 .andReturn().getResponse().getContentAsString();
-        logger.info("RS = " + RSAsString);
+
+        logger.info("RS = " + RS);
     }
 
     @Test
@@ -281,7 +288,7 @@ public class ProfileReaderControllerTest
         final CustomerDto CUSTOMER_DTO = new CustomerDto(new Message("can't update because of customer doesn't exist!", Message.Status.FAILURE), null);
         Mockito.when(profileReaderServiceMock.updateCustomer(CUSTOMER)).thenReturn(CUSTOMER_DTO);
 
-        String RSAsString = mockMvc.perform(put("/ProfileReader")
+        String RS = mockMvc.perform(put("/ProfileReader")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(TestUtils.convertObjectToJsonText(CUSTOMER)))
                 .andExpect(status().isOk())
@@ -290,7 +297,8 @@ public class ProfileReaderControllerTest
                 .andExpect(jsonPath("$.message.status", equalTo(CUSTOMER_DTO.getMessage().getStatus().toString())))
                 .andExpect(jsonPath("$.customer", isEmptyOrNullString()))
                 .andReturn().getResponse().getContentAsString();
-        logger.info("RS = " + RSAsString);
+
+        logger.info("RS = " + RS);
     }
 
     @Test
@@ -299,7 +307,11 @@ public class ProfileReaderControllerTest
         final CustomerDto CUSTOMER_DTO = new CustomerDto(new Message("customerId is demanded!", Message.Status.FAILURE), null);
         Mockito.when(profileReaderServiceMock.updateCustomer(CUSTOMER)).thenReturn(CUSTOMER_DTO);
 
-        String RSAsString = mockMvc.perform(put("/ProfileReader")
+        String RQ = TestUtils.convertObjectToJsonText(CUSTOMER);
+
+        logger.info("RQ = " + RQ);
+
+        String RS = mockMvc.perform(put("/ProfileReader")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(TestUtils.convertObjectToJsonText(CUSTOMER)))
                 .andExpect(status().isOk())
@@ -308,7 +320,74 @@ public class ProfileReaderControllerTest
                 .andExpect(jsonPath("$.message.status", equalTo(CUSTOMER_DTO.getMessage().getStatus().toString())))
                 .andExpect(jsonPath("$.customer", isEmptyOrNullString()))
                 .andReturn().getResponse().getContentAsString();
-        logger.info("RS = " + RSAsString);
+
+        logger.info("RS = " + RS);
     }
 
+    @Test
+    public void testLoginCustomerWhenExistExpectSuccess() throws Exception
+    {
+        String username = "USERNAME";
+        String password = "PASSWORD";
+        final LoginDto loginDto = new LoginDto(username, password);
+
+        CustomerDto CUSTOMER_DTO = new CustomerDto(new Message("ACCESS GRANTED!", Message.Status.SUCCESS), CUSTOMER);
+
+        Mockito.when(profileReaderServiceMock.login(username, password)).thenReturn(CUSTOMER_DTO);
+
+        String RQ = TestUtils.convertObjectToJsonText(loginDto);
+
+        logger.info("RQ = " + RQ);
+
+        String RS = mockMvc.perform(post("/ProfileReader/login")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(TestUtils.convertObjectToJsonText(loginDto)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$.message.message", equalTo(CUSTOMER_DTO.getMessage().getMessage())))
+                .andExpect(jsonPath("$.message.status", equalTo(CUSTOMER_DTO.getMessage().getStatus().toString())))
+                .andExpect(jsonPath("$.customer.firstname", is(CUSTOMER.getFirstname())))
+                .andExpect(jsonPath("$.customer.lastname", is(CUSTOMER.getLastname())))
+                .andExpect(jsonPath("$.customer.email", is(CUSTOMER.getEmail())))
+                .andExpect(jsonPath("$.customer.address.street", is(CUSTOMER.getAddress().getStreet())))
+                .andExpect(jsonPath("$.customer.address.city", is(CUSTOMER.getAddress().getCity())))
+                .andExpect(jsonPath("$.customer.address.zipCode", is(CUSTOMER.getAddress().getZipCode())))
+                .andExpect(jsonPath("$.customer.address.country", is(CUSTOMER.getAddress().getCountry())))
+                .andExpect(jsonPath("$.customer.creditCard.number", is(CUSTOMER.getCreditCard().getNumber())))
+                .andExpect(jsonPath("$.customer.creditCard.balance", is(CUSTOMER.getCreditCard().getBalance())))
+                .andExpect(jsonPath("$.customer.creditCard.currency", is(CUSTOMER.getCreditCard().getCurrency())))
+                .andExpect(jsonPath("$.customer.points", is(CUSTOMER.getPoints().intValue())))
+                .andExpect(jsonPath("$.customer.tierLevel", is(CUSTOMER.getTierLevel().toString())))
+                .andReturn().getResponse().getContentAsString();
+
+        logger.info("RS = " + RS);
+    }
+
+    @Test
+    public void testLoginCustomerWhenDoesNotExistExpectFailure() throws Exception
+    {
+        String username = "FAKE USERNAME";
+        String password = "FAKE PASSWORD";
+        final LoginDto loginDto = new LoginDto(username, password);
+
+        CustomerDto CUSTOMER_DTO = new CustomerDto(new Message("ACCESS DENIED!", Message.Status.FAILURE), null);
+
+        Mockito.when(profileReaderServiceMock.login(username, password)).thenReturn(CUSTOMER_DTO);
+
+        String RQ = TestUtils.convertObjectToJsonText(loginDto);
+
+        logger.info("RQ = " + RQ);
+
+        String RS = mockMvc.perform(post("/ProfileReader/login")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(TestUtils.convertObjectToJsonText(loginDto)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$.message.message", equalTo(CUSTOMER_DTO.getMessage().getMessage())))
+                .andExpect(jsonPath("$.message.status", equalTo(CUSTOMER_DTO.getMessage().getStatus().toString())))
+                .andExpect(jsonPath("$.customer", isEmptyOrNullString()))
+                .andReturn().getResponse().getContentAsString();
+
+        logger.info("RS = " + RS);
+    }
 }

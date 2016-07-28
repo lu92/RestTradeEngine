@@ -61,7 +61,7 @@ public class ProfileReaderController
         return profileReaderService.updateCustomer(customer);
     }
 
-    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
     @ResponseBody
     public CustomerDto loginCustomer(@RequestBody LoginDto loginDto)
     {

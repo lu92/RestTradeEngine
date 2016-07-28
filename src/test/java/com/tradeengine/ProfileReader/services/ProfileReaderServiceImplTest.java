@@ -26,7 +26,7 @@ import static org.fest.assertions.Assertions.assertThat;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = { ProfileReaderIntegrationContext.class })
 @Rollback(true)
-public class ProfileReaderServiceImplIntegrationTest
+public class ProfileReaderServiceImplTest
 {
     @Autowired
     private ProfileReaderServiceImpl profileReaderService;
