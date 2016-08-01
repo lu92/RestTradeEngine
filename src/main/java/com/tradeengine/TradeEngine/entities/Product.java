@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Builder;
+import org.hibernate.annotations.Proxy;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -24,6 +25,7 @@ import java.util.List;
 @Data
 @Entity
 @Builder
+@Proxy(lazy=false)
 @NoArgsConstructor
 @AllArgsConstructor
 public class Product

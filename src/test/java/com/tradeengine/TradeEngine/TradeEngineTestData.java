@@ -1,5 +1,6 @@
 package com.tradeengine.TradeEngine;
 
+import com.tradeengine.TradeEngine.dto.CategoryInfo;
 import com.tradeengine.TradeEngine.entities.Category;
 import com.tradeengine.TradeEngine.entities.Product;
 import com.tradeengine.TradeEngine.entities.ProductSpecification;
@@ -40,6 +41,8 @@ public class TradeEngineTestData
     public static final String LAPTOPS_CATEGORY_NAME = "Laptops";
 
     public static final Category PHONES_CATEGORY = Category.builder().name(PHONES_CATEGORY_NAME).productSchemaJsonFigure(PHONES_PRODUCT_SCHEME).build();
+    public static final CategoryInfo PHONES_CATEGORY_INFO = CategoryInfo.builder().name(PHONES_CATEGORY_NAME).productSchemaJsonFigure(PHONES_PRODUCT_SCHEME).build();
+
     public static final Category CATEGORY_22 = Category.builder().name(LAPTOPS_CATEGORY_NAME).build();
 
     public static final List<Category> CATEGORY_2_LIST = new ArrayList<Category>()
@@ -68,6 +71,19 @@ public class TradeEngineTestData
             .quantity(15)
             .price(Price.builder().amount(2000).tax(500).price(2500).currency("PLN").build())
             .productDescription("SAMSUNG GALAXY S7")
+            .productSpecificationList(new ArrayList<ProductSpecification>() {{
+                add(ProductSpecification.builder().property("screen").value("5.5").unitOfValue("cal").valueType("java.lang.Double.class").build());
+                add(ProductSpecification.builder().property("producer").value("Samsung").unitOfValue("").valueType("java.lang.String.class").build());
+            }})
+            .imagePath("C://")
+            .build();
+
+    public static Product PRODUCT_SGS6 = Product.builder()
+            .commercialName("SAMSUNG GALAXY S6")
+            .isAvailable(false)
+            .quantity(15)
+            .price(Price.builder().amount(1000).tax(250).price(1250).currency("PLN").build())
+            .productDescription("SAMSUNG GALAXY S6")
             .productSpecificationList(new ArrayList<ProductSpecification>() {{
                 add(ProductSpecification.builder().property("screen").value("5.5").unitOfValue("cal").valueType("java.lang.Double.class").build());
                 add(ProductSpecification.builder().property("producer").value("Samsung").unitOfValue("").valueType("java.lang.String.class").build());

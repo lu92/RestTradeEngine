@@ -36,9 +36,10 @@ import static com.tradeengine.ShoppingHistoryTestData.COMPLETED_ORDER_1;
 import static com.tradeengine.TradeEngine.TradeEngineTestData.FAKE_CATEGORY_ID;
 import static com.tradeengine.TradeEngine.TradeEngineTestData.LAPTOPS_CATEGORY_NAME;
 import static com.tradeengine.TradeEngine.TradeEngineTestData.PHONES_CATEGORY;
+import static com.tradeengine.TradeEngine.TradeEngineTestData.PHONES_CATEGORY_INFO;
 import static com.tradeengine.TradeEngine.TradeEngineTestData.PHONES_CATEGORY_NAME;
-import static com.tradeengine.TradeEngine.TradeEngineTestData.PRODUCT_SGS7;
 import static com.tradeengine.TradeEngine.TradeEngineTestData.PHONES_PRODUCT_SCHEME;
+import static com.tradeengine.TradeEngine.TradeEngineTestData.PRODUCT_SGS7;
 import static com.tradeengine.TradeEngine.TradeEngineTestData.PROPER_CATEGORY_ID;
 import static com.tradeengine.common.Message.Status.FAILURE;
 import static com.tradeengine.common.Message.Status.SUCCESS;
@@ -46,7 +47,6 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
-import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -88,22 +88,21 @@ public class TradeEngineControllerTest
         CategoryDto categoryDto = new CategoryDto(new Message("Selected category doesn't exist!", FAILURE), null);
         when(tradeEngineServiceMock.getCategory(anyLong())).thenReturn(categoryDto);
 
-        final long MISSING_CATEGORY_ID = -1;
-
         String RS = mockMvc.perform(get(TRADE_ENGINE_CATEGORY_URL + "/" + FAKE_CATEGORY_ID))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.message.message", equalTo("Selected category doesn't exist!")))
                 .andExpect(jsonPath("$.message.status", equalTo(FAILURE.toString())))
-                .andExpect(jsonPath("$.category", isEmptyOrNullString())).andReturn().getResponse().getContentAsString();
+                .andExpect(jsonPath("$.categoryInfo", isEmptyOrNullString()))
+                .andReturn().getResponse().getContentAsString();
 
         logger.info("RS = " + RS);
     }
 
     @Test
-    public void testGetCategoryWhenExist() throws Exception
+    public void testGetCategoryWhichIsRootCategoryWithoutSubCategoriesExpectSuccess() throws Exception
     {
-        CategoryDto categoryDto = new CategoryDto(new Message("Category has been delivered!", SUCCESS), PHONES_CATEGORY);
+        CategoryDto categoryDto = new CategoryDto(new Message("Category has been delivered!", SUCCESS), PHONES_CATEGORY_INFO);
         when(tradeEngineServiceMock.getCategory(anyLong())).thenReturn(categoryDto);
 
         String RS = mockMvc.perform(get(TRADE_ENGINE_CATEGORY_URL + "/" + PROPER_CATEGORY_ID))
@@ -111,8 +110,11 @@ public class TradeEngineControllerTest
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.message.message", equalTo("Category has been delivered!")))
                 .andExpect(jsonPath("$.message.status", equalTo(SUCCESS.toString())))
-                .andExpect(jsonPath("$.category.name", equalTo(PHONES_CATEGORY.getName())))
-                .andExpect(jsonPath("$.category.name", equalTo(PHONES_CATEGORY.getName()))).andReturn().getResponse().getContentAsString();
+                .andExpect(jsonPath("$.categoryInfo.parentCategory", isEmptyOrNullString()))
+                .andExpect(jsonPath("$.categoryInfo.name", equalTo(PHONES_CATEGORY.getName())))
+                .andExpect(jsonPath("$.categoryInfo.subCategories", isEmptyOrNullString()))
+                .andExpect(jsonPath("$.categoryInfo.productSchemaJsonFigure", equalTo(PHONES_CATEGORY.getProductSchemaJsonFigure())))
+                .andReturn().getResponse().getContentAsString();
 
         logger.info("RS = " + RS);
     }
@@ -186,7 +188,7 @@ public class TradeEngineControllerTest
         String RQ = TestUtils.convertObjectToJsonText(createCategoryDto);
         logger.info("RQ = " + RQ);
 
-        CategoryDto categoryDto = new CategoryDto(new Message("Category has been created!", SUCCESS), PHONES_CATEGORY);
+        CategoryDto categoryDto = new CategoryDto(new Message("Category has been created!", SUCCESS), PHONES_CATEGORY_INFO);
 
         when(tradeEngineServiceMock.createCategory(createCategoryDto)).thenReturn(categoryDto);
 
@@ -197,8 +199,7 @@ public class TradeEngineControllerTest
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.message.message", equalTo("Category has been created!")))
                 .andExpect(jsonPath("$.message.status", equalTo(SUCCESS.toString())))
-                .andExpect(jsonPath("$.category.name", equalTo(PHONES_CATEGORY.getName())))
-                .andExpect(jsonPath("$.category.name", equalTo(PHONES_CATEGORY.getName())))
+                .andExpect(jsonPath("$.categoryInfo.name", equalTo(PHONES_CATEGORY.getName())))
                 .andReturn().getResponse().getContentAsString();
 
         logger.info("RS = " + RS);
@@ -207,7 +208,7 @@ public class TradeEngineControllerTest
     @Test
     public void testAddProductExpectSuccess() throws Exception
     {
-        final CreateProductDto createProductDto = new CreateProductDto(1,"SAMSUNG GALAXY S7", "SAMSUNG GALAXY S7 Description", 10,
+        final CreateProductDto createProductDto = new CreateProductDto(1, "SAMSUNG GALAXY S7", "SAMSUNG GALAXY S7 Description", 10,
                 new Price(2000, 500, 2500, "PLN"), "image path", Arrays.asList(
                 ProductSpecification.builder().property("screen").value("5.5").unitOfValue("cal").valueType("java.lang.Double.class").build(),
                 ProductSpecification.builder().property("producer").value("Samsung").unitOfValue("").valueType("java.lang.String.class").build()
@@ -237,7 +238,7 @@ public class TradeEngineControllerTest
     @Test
     public void testAddProductWhenCategoryDoesNotExistExpectFailure() throws Exception
     {
-        final CreateProductDto createProductDto = new CreateProductDto(1,"SAMSUNG GALAXY S7", "SAMSUNG GALAXY S7 Description", 10,
+        final CreateProductDto createProductDto = new CreateProductDto(1, "SAMSUNG GALAXY S7", "SAMSUNG GALAXY S7 Description", 10,
                 new Price(2000, 500, 2500, "PLN"), "image path", Arrays.asList(
                 ProductSpecification.builder().property("screen").value("5.5").unitOfValue("cal").valueType("java.lang.Double.class").build(),
                 ProductSpecification.builder().property("producer").value("Samsung").unitOfValue("").valueType("java.lang.String.class").build()
@@ -263,4 +264,14 @@ public class TradeEngineControllerTest
 
         logger.info("RS = " + RS);
     }
+
+    @Test
+    public void testUpdateProductExpectSuccess() throws Exception
+    {
+        Product productForUpdate = PRODUCT_SGS7;
+
+        String RQ = TestUtils.convertObjectToJsonText(productForUpdate);
+        logger.info("RQ = " + RQ);
+    }
+
 }
