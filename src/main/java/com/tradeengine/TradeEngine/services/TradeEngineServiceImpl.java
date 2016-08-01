@@ -1,6 +1,7 @@
 package com.tradeengine.TradeEngine.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tradeengine.TradeEngine.dto.CategoryInfo;
 import com.tradeengine.TradeEngine.dto.CategoryDto;
 import com.tradeengine.TradeEngine.dto.CategoryListDto;
 import com.tradeengine.TradeEngine.dto.CreateCategoryDto;
@@ -11,12 +12,13 @@ import com.tradeengine.TradeEngine.dto.ProductScheme;
 import com.tradeengine.TradeEngine.dto.ProductSchemeDto;
 import com.tradeengine.TradeEngine.entities.Category;
 import com.tradeengine.TradeEngine.entities.Product;
+import com.tradeengine.TradeEngine.mappers.TradeEngineMapper;
 import com.tradeengine.TradeEngine.repositories.CategoryRepository;
-import com.tradeengine.TradeEngine.repositories.ProductSpecificationRepository;
 import com.tradeengine.TradeEngine.repositories.ProductRepository;
-import com.tradeengine.TradeEngine.services.validators.ProductValidator;
+import com.tradeengine.TradeEngine.repositories.ProductSpecificationRepository;
 import com.tradeengine.common.Message;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -28,6 +30,7 @@ import static com.tradeengine.common.Message.Status.FAILURE;
 import static com.tradeengine.common.Message.Status.SUCCESS;
 
 @Service
+@Repository
 public class TradeEngineServiceImpl implements TradeEngineService
 {
     @Autowired
@@ -39,8 +42,11 @@ public class TradeEngineServiceImpl implements TradeEngineService
     @Autowired
     private ProductSpecificationRepository productSpecificationRepository;
 
-//    @Autowired
-//    private ProductValidator productValidator;
+    //    @Autowired
+    //    private ProductValidator productValidator;
+
+    @Autowired
+    private TradeEngineMapper tradeEngineMapper;
 
     @Override
     public CategoryListDto getCategoryList()
@@ -62,8 +68,9 @@ public class TradeEngineServiceImpl implements TradeEngineService
     {
         if (categoryRepository.exists(categoryId))
         {
-            Category category = categoryRepository.getOne(categoryId);
-            return new CategoryDto(new Message("Category has been delivered!", SUCCESS), category);
+            Category category = categoryRepository.findOne(categoryId);
+            CategoryInfo categoryInfo = tradeEngineMapper.convertCategory(category);
+            return new CategoryDto(new Message("Category has been delivered!", SUCCESS), categoryInfo);
         }
         else
         {
@@ -100,6 +107,7 @@ public class TradeEngineServiceImpl implements TradeEngineService
     }
 
     @Override
+//    @Transactional(readOnly = false)
     public CategoryDto createCategory(CreateCategoryDto createCategoryDto)
     {
 
@@ -116,14 +124,19 @@ public class TradeEngineServiceImpl implements TradeEngineService
             if (parentCategoryList.isEmpty())
             {
                 Category savedCategory = categoryRepository.save(category);
-                return new CategoryDto(new Message("Category has been created!", SUCCESS), savedCategory);
+                CategoryInfo categoryInfo = tradeEngineMapper.convertCategory(savedCategory);
+                return new CategoryDto(new Message("Category has been created!", SUCCESS), categoryInfo);
             }
             else if (parentCategoryList.size() == 1)
             {
                 Category parentCategory = parentCategoryList.get(0);
+                category.setParent(parentCategory);
                 Category savedCategory = categoryRepository.save(category);
                 parentCategory.getSubCategories().add(savedCategory);
-                return new CategoryDto(new Message("Category has been created!", SUCCESS), category);
+                categoryRepository.save(parentCategory);
+                CategoryInfo categoryInfo =
+                        tradeEngineMapper.convertCategory(categoryRepository.findByName(savedCategory.getName()).get(0));
+                return new CategoryDto(new Message("Category has been created!", SUCCESS), categoryInfo);
             }
             else
             {
@@ -177,20 +190,18 @@ public class TradeEngineServiceImpl implements TradeEngineService
             //            Errors errors = new
             //            productValidator.validate(product);
 
-            if (true)
-            {
-                product.getProductSpecificationList().stream()
-                        .forEach(productSpecification -> productSpecificationRepository.save(productSpecification));
+            product.getProductSpecificationList().stream()
+                    .forEach(productSpecification -> productSpecificationRepository.save(productSpecification));
 
-                Product productDb = productRepository.save(product);
-                category.getProductList().add(productDb);
-                categoryRepository.save(category);
-                return new ProductDto(new Message("Product has been added!", SUCCESS), productDb);
-            }
-            else
-            {
-                return new ProductDto(new Message("Product is not valid!", FAILURE), null);
-            }
+            Product productDb = productRepository.save(product);
+            category.getProductList().add(productDb);
+            categoryRepository.save(category);
+            return new ProductDto(new Message("Product has been added!", SUCCESS), productDb);
+            //            }
+            //            else
+            //            {
+            //                return new ProductDto(new Message("Product is not valid!", FAILURE), null);
+            //            }
         }
         else
         {
@@ -201,7 +212,20 @@ public class TradeEngineServiceImpl implements TradeEngineService
     @Override
     public ProductDto updateProduct(Product product)
     {
-        return null;
+        if (productRepository.exists(product.getProductId()))
+        {
+            Product productDb = productRepository.getOne(product.getProductId());
+
+            product.getProductSpecificationList().stream()
+                    .forEach(productSpecification -> productSpecificationRepository.save(productSpecification));
+
+            productDb = productRepository.save(productDb);
+            return new ProductDto(new Message("Product has been updated!", SUCCESS), productDb);
+        }
+        else
+        {
+            return new ProductDto(new Message("Product doesn't exist!", FAILURE), null);
+        }
     }
 
     @Override
