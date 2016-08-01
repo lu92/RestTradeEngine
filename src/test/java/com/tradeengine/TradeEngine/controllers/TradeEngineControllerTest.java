@@ -3,20 +3,14 @@ package com.tradeengine.TradeEngine.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tradeengine.TestUtils;
 import com.tradeengine.TradeEngine.TradeEngineTestContext;
-import com.tradeengine.TradeEngine.dto.CategoryDto;
-import com.tradeengine.TradeEngine.dto.CategoryListDto;
-import com.tradeengine.TradeEngine.dto.CreateCategoryDto;
-import com.tradeengine.TradeEngine.dto.CreateProductDto;
-import com.tradeengine.TradeEngine.dto.ProductDto;
-import com.tradeengine.TradeEngine.dto.ProductScheme;
-import com.tradeengine.TradeEngine.dto.ProductSchemeDto;
-import com.tradeengine.TradeEngine.dto.ProductSpecification;
+import com.tradeengine.TradeEngine.dto.*;
 import com.tradeengine.TradeEngine.entities.Product;
 import com.tradeengine.TradeEngine.mappers.TradeEngineMapper;
 import com.tradeengine.TradeEngine.services.TradeEngineServiceImpl;
 import com.tradeengine.common.Message;
 import com.tradeengine.common.entities.Price;
 import org.apache.log4j.Logger;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,9 +38,7 @@ import static com.tradeengine.TradeEngine.TradeEngineTestData.PROPER_CATEGORY_ID
 import static com.tradeengine.common.Message.Status.FAILURE;
 import static com.tradeengine.common.Message.Status.SUCCESS;
 import static java.util.Arrays.asList;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.isEmptyOrNullString;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -112,7 +104,7 @@ public class TradeEngineControllerTest
                 .andExpect(jsonPath("$.message.status", equalTo(SUCCESS.toString())))
                 .andExpect(jsonPath("$.categoryInfo.parentCategory", isEmptyOrNullString()))
                 .andExpect(jsonPath("$.categoryInfo.name", equalTo(PHONES_CATEGORY.getName())))
-                .andExpect(jsonPath("$.categoryInfo.subCategories", isEmptyOrNullString()))
+                .andExpect(jsonPath("$.categoryInfo.subCategories", empty()))
                 .andExpect(jsonPath("$.categoryInfo.productSchemaJsonFigure", equalTo(PHONES_CATEGORY.getProductSchemaJsonFigure())))
                 .andReturn().getResponse().getContentAsString();
 
@@ -218,7 +210,8 @@ public class TradeEngineControllerTest
         logger.info("RQ = " + RQ);
 
         Product product = tradeEngineMapper.convertProduct(createProductDto);
-        ProductDto productDto = new ProductDto(new Message("Product has been added!", SUCCESS), product);
+        ProductInfo productInfo = tradeEngineMapper.convertProduct(product);
+        ProductDto productDto = new ProductDto(new Message("Product has been added!", SUCCESS), productInfo);
         when(tradeEngineServiceMock.addProduct(createProductDto.getCategoryId(), product)).thenReturn(productDto);
 
         String RS = mockMvc.perform(post(TRADE_ENGINE_PRODUCT_URL)
@@ -228,8 +221,8 @@ public class TradeEngineControllerTest
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.message.message", equalTo("Product has been added!")))
                 .andExpect(jsonPath("$.message.status", equalTo(SUCCESS.toString())))
-                .andExpect(jsonPath("$.product.commercialName", equalTo("SAMSUNG GALAXY S7")))
-                .andExpect(jsonPath("$.product.productDescription", equalTo("SAMSUNG GALAXY S7 Description")))
+                .andExpect(jsonPath("$.productInfo.commercialName", equalTo("SAMSUNG GALAXY S7")))
+                .andExpect(jsonPath("$.productInfo.productDescription", equalTo("SAMSUNG GALAXY S7 Description")))
                 .andReturn().getResponse().getContentAsString();
 
         logger.info("RS = " + RS);
@@ -259,7 +252,7 @@ public class TradeEngineControllerTest
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.message.message", equalTo("Category doesn't exist!")))
                 .andExpect(jsonPath("$.message.status", equalTo(FAILURE.toString())))
-                .andExpect(jsonPath("$.product", isEmptyOrNullString()))
+                .andExpect(jsonPath("$.productInfo", isEmptyOrNullString()))
                 .andReturn().getResponse().getContentAsString();
 
         logger.info("RS = " + RS);

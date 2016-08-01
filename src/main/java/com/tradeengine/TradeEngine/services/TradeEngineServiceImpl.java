@@ -1,15 +1,7 @@
 package com.tradeengine.TradeEngine.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tradeengine.TradeEngine.dto.CategoryInfo;
-import com.tradeengine.TradeEngine.dto.CategoryDto;
-import com.tradeengine.TradeEngine.dto.CategoryListDto;
-import com.tradeengine.TradeEngine.dto.CreateCategoryDto;
-import com.tradeengine.TradeEngine.dto.ProductCriteria;
-import com.tradeengine.TradeEngine.dto.ProductDto;
-import com.tradeengine.TradeEngine.dto.ProductListDto;
-import com.tradeengine.TradeEngine.dto.ProductScheme;
-import com.tradeengine.TradeEngine.dto.ProductSchemeDto;
+import com.tradeengine.TradeEngine.dto.*;
 import com.tradeengine.TradeEngine.entities.Category;
 import com.tradeengine.TradeEngine.entities.Product;
 import com.tradeengine.TradeEngine.mappers.TradeEngineMapper;
@@ -154,7 +146,8 @@ public class TradeEngineServiceImpl implements TradeEngineService
     {
         if (productRepository.exists(productId))
         {
-            return new ProductDto(new Message("Product has been delivered!", SUCCESS), productRepository.getOne(productId));
+            ProductInfo productInfo = tradeEngineMapper.convertProduct(productRepository.findOne(productId));
+            return new ProductDto(new Message("Product has been delivered!", SUCCESS), productInfo);
         }
         else
         {
@@ -173,7 +166,9 @@ public class TradeEngineServiceImpl implements TradeEngineService
                 return new ProductListDto(new Message("Category doesn't exist!", FAILURE), categoryName, 0, new ArrayList<>());
 
             case 1:
-                return new ProductListDto(new Message("Product list has been delivered!", SUCCESS), categoryName, categoryList.size(), categoryList.get(0).getProductList());
+                List<Product> productList = categoryList.get(0).getProductList();
+                List<ProductInfo> productInfoList = tradeEngineMapper.convertProductList(productList);
+                return new ProductListDto(new Message("Product list has been delivered!", SUCCESS), categoryName, categoryList.size(), productInfoList);
 
             default:
                 return new ProductListDto(new Message("There are multiple occurrence of requested category!", FAILURE), categoryName, 0, new ArrayList<>());
@@ -185,7 +180,7 @@ public class TradeEngineServiceImpl implements TradeEngineService
     {
         if (categoryRepository.exists(categoryId))
         {
-            Category category = categoryRepository.getOne(categoryId);
+            Category category = categoryRepository.findOne(categoryId);
             //            product validation
             //            Errors errors = new
             //            productValidator.validate(product);
@@ -193,10 +188,12 @@ public class TradeEngineServiceImpl implements TradeEngineService
             product.getProductSpecificationList().stream()
                     .forEach(productSpecification -> productSpecificationRepository.save(productSpecification));
 
+            product.setCategory(category);
             Product productDb = productRepository.save(product);
             category.getProductList().add(productDb);
             categoryRepository.save(category);
-            return new ProductDto(new Message("Product has been added!", SUCCESS), productDb);
+            ProductInfo productInfo = tradeEngineMapper.convertProduct(productDb);
+            return new ProductDto(new Message("Product has been added!", SUCCESS), productInfo);
             //            }
             //            else
             //            {
@@ -220,7 +217,8 @@ public class TradeEngineServiceImpl implements TradeEngineService
                     .forEach(productSpecification -> productSpecificationRepository.save(productSpecification));
 
             productDb = productRepository.save(productDb);
-            return new ProductDto(new Message("Product has been updated!", SUCCESS), productDb);
+            ProductInfo productInfo = tradeEngineMapper.convertProduct(productDb);
+            return new ProductDto(new Message("Product has been updated!", SUCCESS), productInfo);
         }
         else
         {
@@ -236,7 +234,8 @@ public class TradeEngineServiceImpl implements TradeEngineService
             Product productDb = productRepository.getOne(productId);
             productDb.setAvailable(true);
             productDb = productRepository.save(productDb);
-            return new ProductDto(new Message("Product has been activated!", SUCCESS), productDb);
+            ProductInfo productInfo = tradeEngineMapper.convertProduct(productDb);
+            return new ProductDto(new Message("Product has been activated!", SUCCESS), productInfo);
         }
         else
         {
@@ -252,7 +251,8 @@ public class TradeEngineServiceImpl implements TradeEngineService
             Product productDb = productRepository.getOne(productId);
             productDb.setAvailable(false);
             productDb = productRepository.save(productDb);
-            return new ProductDto(new Message("Product has been deactivated!", SUCCESS), productDb);
+            ProductInfo productInfo = tradeEngineMapper.convertProduct(productDb);
+            return new ProductDto(new Message("Product has been deactivated!", SUCCESS), productInfo);
         }
         else
         {

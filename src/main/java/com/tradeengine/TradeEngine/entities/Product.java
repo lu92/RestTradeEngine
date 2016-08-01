@@ -25,12 +25,14 @@ import java.util.List;
 @Data
 @Entity
 @Builder
-@Proxy(lazy=false)
+@Proxy(lazy = false)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Product
-{
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @Column(name = "productId")
+public class Product {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "productId")
     private Long productId;
     private String commercialName;
     private String productDescription;
@@ -49,8 +51,7 @@ public class Product
     @OneToMany(mappedBy = "product", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<ProductSpecification> productSpecificationList;
 
-    public List<ProductSpecification> getProductSpecificationList()
-    {
+    public List<ProductSpecification> getProductSpecificationList() {
         if (productSpecificationList == null)
             productSpecificationList = new ArrayList<>();
 

@@ -16,5 +16,5 @@ public class ProductListDto
     private Message message;
     private String category;
     private long amountOfProducts;
-    private List<Product> productList;
+    private List<ProductInfo> productList;
 }

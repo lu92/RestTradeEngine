@@ -15,3 +15,7 @@ do zaimplementowania:
 
 * przegladanie swojej historii przez customera (in progress)
 * ustalic feature'y z Monika
+
+
+
+* przy update product trzeba utworzyć nowy product a stary dezaktywować o ile go ktoś kupił, chodzi o historię produktów
