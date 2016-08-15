@@ -9,7 +9,8 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @EnableAutoConfiguration(exclude = { TradeEngineServiceImpl.class })
-@ComponentScan(basePackages = { "com.tradeengine.TradeEngine.entities", "com.tradeengine.TradeEngine.mappers", "com.tradeengine.TradeEngine.repositories", "com.tradeengine.TradeEngine.controllers" })
+@ComponentScan(basePackages = { "com.tradeengine.TradeEngine.entities", "com.tradeengine.TradeEngine.mappers", "com.tradeengine.TradeEngine.repositories",
+        "com.tradeengine.TradeEngine.controllers", "com.tradeengine.TradeEngine.services.ProductSelector" })
 public class TradeEngineTestContext
 {
     @Bean

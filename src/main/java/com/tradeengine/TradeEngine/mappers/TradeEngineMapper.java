@@ -107,7 +107,7 @@ public class TradeEngineMapper {
                                 .property(productSpecification.getProperty())
                                 .value(productSpecification.getValue())
                                 .unitOfValue(productSpecification.getUnitOfValue())
-                                .value(productSpecification.getValue())
+                                .valueType(productSpecification.getValueType())
                                 .build()
                 );
             }

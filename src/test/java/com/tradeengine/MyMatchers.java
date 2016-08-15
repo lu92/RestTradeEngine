@@ -147,13 +147,13 @@ public class MyMatchers
 //                if (order.getProductIdList().size() != expectedOrder.getProductIdList().size() || expectedOrder.getProductIdList().containsAll(order.getProductIdList()))
 //                    return false;
 
-                if (completedOrder.getPrice().getAmount() != expectedCompletedOrder.getPrice().getAmount())
+                if (completedOrder.getCost().getAmount() != expectedCompletedOrder.getCost().getAmount())
                     return false;
 
-                if (completedOrder.getPrice().getTax() != expectedCompletedOrder.getPrice().getTax())
+                if (completedOrder.getCost().getTax() != expectedCompletedOrder.getCost().getTax())
                     return false;
 
-                if (completedOrder.getPrice().getPrice() != expectedCompletedOrder.getPrice().getPrice())
+                if (completedOrder.getCost().getPrice() != expectedCompletedOrder.getCost().getPrice())
                     return false;
 
                 return true;
@@ -182,10 +182,10 @@ public class MyMatchers
 //                if (!checkOrderListsAreSame(shoppingHistory))
 //                    return false;
 
-                if (shoppingHistory.getTotalAmount() != expectedShoppingHistory.getTotalAmount())
+                if (shoppingHistory.getSpendMoney().getAmount() != expectedShoppingHistory.getSpendMoney().getAmount())
                     return false;
 
-                if (shoppingHistory.getTotalTaxes() != expectedShoppingHistory.getTotalTaxes())
+                if (shoppingHistory.getSpendMoney().getTax() != expectedShoppingHistory.getSpendMoney().getTax())
                     return false;
 
                 return true;

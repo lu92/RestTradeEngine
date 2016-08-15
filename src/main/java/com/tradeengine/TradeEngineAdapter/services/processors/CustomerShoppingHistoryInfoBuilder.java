@@ -6,7 +6,6 @@ import com.tradeengine.TradeEngineAdapter.model.Customer;
 import com.tradeengine.TradeEngineAdapter.model.Price;
 import com.tradeengine.TradeEngineAdapter.model.Product;
 import com.tradeengine.TradeEngineAdapter.model.ProductSpecification;
-import com.tradeengine.TradeEngineAdapter.model.ShoppingHistory;
 
 class CustomerShoppingHistoryInfoBuilder
 {

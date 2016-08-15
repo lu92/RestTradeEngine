@@ -18,4 +18,14 @@ public class Price
     private double tax;
     private double price;
     private String currency;
+
+    @Override
+    public String toString() {
+        return "Price{" +
+                "amount=" + amount +
+                ", tax=" + tax +
+                ", price=" + price +
+                ", currency='" + currency + '\'' +
+                '}';
+    }
 }

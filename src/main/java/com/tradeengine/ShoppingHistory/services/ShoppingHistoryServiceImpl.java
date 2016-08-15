@@ -7,6 +7,7 @@ import com.tradeengine.ShoppingHistory.entities.ShoppingHistory;
 import com.tradeengine.ShoppingHistory.repositories.CompletedOrderRepository;
 import com.tradeengine.ShoppingHistory.repositories.ShoppingHistoryRepository;
 import com.tradeengine.common.Message;
+import com.tradeengine.common.entities.Price;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,7 +48,8 @@ public class ShoppingHistoryServiceImpl implements ShoppingHistoryService
     {
         if (shoppingHistoryRepository.findByCustomerId(customerId).isEmpty())
         {
-            ShoppingHistory shoppingHistory = ShoppingHistory.builder().customerId(customerId).sintheticId(UUID.randomUUID().toString()).totalAmount(0).totalTaxes(0).build();
+            ShoppingHistory shoppingHistory = ShoppingHistory.builder().customerId(customerId).syntheticId(UUID.randomUUID().toString())
+                    .spendMoney(Price.builder().amount(0).tax(0).build()).build();
             ShoppingHistory shoppingHistoryDb = shoppingHistoryRepository.save(shoppingHistory);
             return new ShoppingHistoryDto(new Message("Shopping history has been created!", Message.Status.SUCCESS), shoppingHistoryDb);
         }
@@ -82,8 +84,13 @@ public class ShoppingHistoryServiceImpl implements ShoppingHistoryService
                         ShoppingHistory shoppingHistory = shoppingHistoryList.get(0);
                         completedOrder.setSyntheticId(UUID.randomUUID().toString());
                         // Order Validation
-                        shoppingHistory.setTotalAmount(shoppingHistory.getTotalAmount() + completedOrder.getPrice().getAmount());
-                        shoppingHistory.setTotalTaxes(shoppingHistory.getTotalTaxes() + completedOrder.getPrice().getTax());
+
+                        shoppingHistory.setSpendMoney(Price.builder()
+                                .amount(shoppingHistory.getSpendMoney().getAmount() + completedOrder.getCost().getAmount())
+                                .tax(shoppingHistory.getSpendMoney().getTax() + completedOrder.getCost().getTax())
+                                .build());
+//                        shoppingHistory.setTotalAmount(shoppingHistory.getTotalAmount() + completedOrder.getCost().getAmount());
+//                        shoppingHistory.setTotalTaxes(shoppingHistory.getTotalTaxes() + completedOrder.getCost().getTax());
 
                         CompletedOrder completedOrderDb = completedOrderRepository.save(completedOrder);
 

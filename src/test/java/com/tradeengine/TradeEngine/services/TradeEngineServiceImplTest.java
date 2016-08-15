@@ -4,7 +4,6 @@ import com.tradeengine.TradeEngine.TradeEngineServiceContext;
 import com.tradeengine.TradeEngine.dto.*;
 import com.tradeengine.TradeEngine.entities.Category;
 import com.tradeengine.TradeEngine.entities.Product;
-import com.tradeengine.TradeEngine.entities.ProductSpecification;
 import com.tradeengine.TradeEngine.repositories.CategoryRepository;
 import com.tradeengine.TradeEngine.repositories.ProductRepository;
 import com.tradeengine.TradeEngine.repositories.ProductSpecificationRepository;
@@ -16,22 +15,15 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.tradeengine.TradeEngine.TradeEngineTestData.FAKE_CATEGORY_ID;
-import static com.tradeengine.TradeEngine.TradeEngineTestData.FAKE_PRODUCT_ID;
-import static com.tradeengine.TradeEngine.TradeEngineTestData.LAPTOPS_PRODUCT_SCHEME;
-import static com.tradeengine.TradeEngine.TradeEngineTestData.PHONES_PRODUCT_SCHEME;
-import static com.tradeengine.TradeEngine.TradeEngineTestData.PRODUCT_COMPUTER;
-import static com.tradeengine.TradeEngine.TradeEngineTestData.PRODUCT_SGS6;
-import static com.tradeengine.TradeEngine.TradeEngineTestData.PRODUCT_SGS7;
+import static com.tradeengine.TradeEngine.TradeEngineTestData.*;
 import static com.tradeengine.common.Message.Status.FAILURE;
 import static com.tradeengine.common.Message.Status.SUCCESS;
 import static org.fest.assertions.Assertions.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = { TradeEngineServiceContext.class })
+@SpringApplicationConfiguration(classes = {TradeEngineServiceContext.class})
 @Rollback(true)
-public class TradeEngineServiceImplTest
-{
+public class TradeEngineServiceImplTest {
 
     @Autowired
     private ProductRepository productRepository;
@@ -47,8 +39,7 @@ public class TradeEngineServiceImplTest
 
     @Test
     @Transactional
-    public void testCreateAndGetCategory()
-    {
+    public void testCreateAndGetCategory() {
 
         final CreateCategoryDto createCategoryDto = new CreateCategoryDto("Phones", null, PHONES_PRODUCT_SCHEME);
         CategoryDto CREATE_categoryDto = tradeEngineService.createCategory(createCategoryDto);
@@ -73,8 +64,7 @@ public class TradeEngineServiceImplTest
 
     @Test
     @Transactional
-    public void testGetCategoryWhenDoesNotExistExpectFailure()
-    {
+    public void testGetCategoryWhenDoesNotExistExpectFailure() {
         final CategoryDto GET_categoryDto = tradeEngineService.getCategory(FAKE_CATEGORY_ID);
 
         assertThat(GET_categoryDto.getMessage().getStatus()).isEqualTo(FAILURE);
@@ -85,8 +75,7 @@ public class TradeEngineServiceImplTest
 
     @Test
     @Transactional
-    public void testGetCategoryListWhenDoesNotExistAnyCategory()
-    {
+    public void testGetCategoryListWhenDoesNotExistAnyCategory() {
         final CategoryListDto categoryList = tradeEngineService.getCategoryList();
 
         assertThat(categoryList.getMessage().getStatus()).isEqualTo(SUCCESS);
@@ -97,8 +86,7 @@ public class TradeEngineServiceImplTest
 
     @Test
     @Transactional
-    public void testCreateTwoTimesSameCategoryExpectFailureForSecond()
-    {
+    public void testCreateTwoTimesSameCategoryExpectFailureForSecond() {
         final CreateCategoryDto createCategoryDto_1 = new CreateCategoryDto("Phones", null, PHONES_PRODUCT_SCHEME);
         CategoryDto CREATE_categoryDto_1 = tradeEngineService.createCategory(createCategoryDto_1);
 
@@ -121,8 +109,7 @@ public class TradeEngineServiceImplTest
 
     @Test
     @Transactional
-    public void testCreateTwoDifferentCategoriesAndThenGetCategoryList()
-    {
+    public void testCreateTwoDifferentCategoriesAndThenGetCategoryList() {
         final CreateCategoryDto createCategoryDto_1 = new CreateCategoryDto("Phones", null, PHONES_PRODUCT_SCHEME);
         CategoryDto CREATE_categoryDto_1 = tradeEngineService.createCategory(createCategoryDto_1);
 
@@ -152,8 +139,7 @@ public class TradeEngineServiceImplTest
 
     @Test
     @Transactional
-    public void testAddSubcategoryToExistingCategoryExpectSuccess()
-    {
+    public void testAddSubcategoryToExistingCategoryExpectSuccess() {
         final CreateCategoryDto createCategoryDto_1 = new CreateCategoryDto("Phones", null, PHONES_PRODUCT_SCHEME);
         CategoryDto CREATE_categoryDto_1 = tradeEngineService.createCategory(createCategoryDto_1);
 
@@ -182,8 +168,7 @@ public class TradeEngineServiceImplTest
 
     @Test
     @Transactional
-    public void testAddTwoSubcategoriesToExistingCategoryExpectSuccess()
-    {
+    public void testAddTwoSubcategoriesToExistingCategoryExpectSuccess() {
         final CreateCategoryDto createCategoryDto_1 = new CreateCategoryDto("Electronic", null, "");
         CategoryDto CREATE_categoryDto_1 = tradeEngineService.createCategory(createCategoryDto_1);
         assertThat(CREATE_categoryDto_1.getMessage().getStatus()).isEqualTo(SUCCESS);
@@ -217,8 +202,7 @@ public class TradeEngineServiceImplTest
 
     @Test
     @Transactional
-    public void testGetProductSchemeForCategoryExpectSuccess()
-    {
+    public void testGetProductSchemeForCategoryExpectSuccess() {
         final CreateCategoryDto createCategoryDto_1 = new CreateCategoryDto("Phones", null, PHONES_PRODUCT_SCHEME);
         CategoryDto CREATE_categoryDto_1 = tradeEngineService.createCategory(createCategoryDto_1);
 
@@ -240,8 +224,7 @@ public class TradeEngineServiceImplTest
 
     @Test
     @Transactional
-    public void testGetProductSchemeWhenCategoryDoesNotExistExpectFailure()
-    {
+    public void testGetProductSchemeWhenCategoryDoesNotExistExpectFailure() {
         final ProductSchemeDto productSchemeForCategory = tradeEngineService.getProductSchemeForCategory(FAKE_CATEGORY_ID);
 
         assertThat(productSchemeForCategory.getMessage().getStatus()).isEqualTo(FAILURE);
@@ -253,8 +236,7 @@ public class TradeEngineServiceImplTest
 
     @Test
     @Transactional
-    public void testGetProductWhenDoesNotExistExpectFailure()
-    {
+    public void testGetProductWhenDoesNotExistExpectFailure() {
         ProductDto productDto = tradeEngineService.getProduct(FAKE_PRODUCT_ID);
 
         assertThat(productDto.getMessage().getStatus()).isEqualTo(FAILURE);
@@ -264,8 +246,7 @@ public class TradeEngineServiceImplTest
 
     @Test
     @Transactional
-    public void testGetProductWhenExistExpectSuccess()
-    {
+    public void testGetProductWhenExistExpectSuccess() {
         Product product = productRepository.save(PRODUCT_COMPUTER);
 
         ProductDto productDto = tradeEngineService.getProduct(product.getProductId());
@@ -277,8 +258,7 @@ public class TradeEngineServiceImplTest
 
     @Test
     @Transactional
-    public void addProductAndActivateExpectSuccess()
-    {
+    public void addProductAndActivateExpectSuccess() {
         final CreateCategoryDto createCategoryDto = new CreateCategoryDto("Phones", "Electronic", PHONES_PRODUCT_SCHEME);
         CategoryDto savedCategory = tradeEngineService.createCategory(createCategoryDto);
         assertThat(savedCategory.getMessage().getStatus()).isEqualTo(SUCCESS);
@@ -308,8 +288,7 @@ public class TradeEngineServiceImplTest
 
     @Test
     @Transactional
-    public void activateProductWhichDoesNotExistExpectFailure()
-    {
+    public void activateProductWhichDoesNotExistExpectFailure() {
         ProductDto activatedProductDto = tradeEngineService.activateProduct(FAKE_PRODUCT_ID);
 
         assertThat(activatedProductDto.getMessage().getStatus()).isEqualTo(FAILURE);
@@ -319,8 +298,7 @@ public class TradeEngineServiceImplTest
 
     @Test
     @Transactional
-    public void deactivateProductWhichDoesNotExistExpectFailure()
-    {
+    public void deactivateProductWhichDoesNotExistExpectFailure() {
         ProductDto activatedProductDto = tradeEngineService.deactivateProduct(FAKE_PRODUCT_ID);
 
         assertThat(activatedProductDto.getMessage().getStatus()).isEqualTo(FAILURE);
@@ -330,8 +308,7 @@ public class TradeEngineServiceImplTest
 
     @Test
     @Transactional
-    public void createAndUpdateProductExpectSuccess()
-    {
+    public void createAndUpdateProductExpectSuccess() {
 //        final CreateCategoryDto createCategoryDto = new CreateCategoryDto("Phones", "Electronic", PHONES_PRODUCT_SCHEME);
 //        CategoryDto savedCategory = tradeEngineService.createCategory(createCategoryDto);
 //        assertThat(savedCategory.getMessage().getStatus()).isEqualTo(SUCCESS);
@@ -347,9 +324,9 @@ public class TradeEngineServiceImplTest
 //        ProductInfo updatedProduct = productDto.getProductInfo();
 //        updatedProduct.setCommercialName("SAMSUNG GALAXY S5");
 //        updatedProduct.setProductDescription("SAMSUNG GALAXY S5 Description");
-//        updatedProduct.getPrice().setAmount(700);
-//        updatedProduct.getPrice().setTax(150);
-//        updatedProduct.getPrice().setPrice(850);
+//        updatedProduct.getCost().setAmount(700);
+//        updatedProduct.getCost().setTax(150);
+//        updatedProduct.getCost().setCost(850);
 //        updatedProduct.getProductSpecificationList().add(
 //                com.tradeengine.TradeEngine.dto.ProductSpecification.builder()
 //                        .property("Memory").value("32").unitOfValue("GB").valueType("java.lang.Integer.class").build()
@@ -362,9 +339,9 @@ public class TradeEngineServiceImplTest
 //        ProductDto updatedProductDto = tradeEngineService.updateProduct(updatedProduct);
 //        assertThat(updatedProductDto.getProductInfo().getCommercialName()).isEqualTo("SAMSUNG GALAXY S5");
 //        assertThat(updatedProductDto.getProductInfo().getProductDescription()).isEqualTo("SAMSUNG GALAXY S5 Description");
-//        assertThat(updatedProductDto.getProductInfo().getPrice().getAmount()).isEqualTo(700);
-//        assertThat(updatedProductDto.getProductInfo().getPrice().getTax()).isEqualTo(150);
-//        assertThat(updatedProductDto.getProductInfo().getPrice().getPrice()).isEqualTo(850);
+//        assertThat(updatedProductDto.getProductInfo().getCost().getAmount()).isEqualTo(700);
+//        assertThat(updatedProductDto.getProductInfo().getCost().getTax()).isEqualTo(150);
+//        assertThat(updatedProductDto.getProductInfo().getCost().getCost()).isEqualTo(850);
 //
 //        com.tradeengine.TradeEngine.dto.ProductSpecification justAddedProductSpecification = updatedProductDto.getProductInfo().getProductSpecificationList().get(2);
 //        assertThat(justAddedProductSpecification.getProperty()).isEqualTo("Memory");

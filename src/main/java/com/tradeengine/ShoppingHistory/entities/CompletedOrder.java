@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Builder;
+import org.hibernate.annotations.Proxy;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -28,11 +29,13 @@ import java.util.List;
 @Data
 @Builder
 @Entity
+@Proxy(lazy = false)
 @NoArgsConstructor
 @AllArgsConstructor
-public class CompletedOrder
-{
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @Column(name = "orderId")
+public class CompletedOrder {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "orderId")
     private Long orderId;
 
     @JsonSerialize(using = LocalDateTimeSerializer.class)
@@ -49,27 +52,19 @@ public class CompletedOrder
     private String syntheticId;
 
     private long gainedPoints;
-//    private double amount;
-//    private double tax;
-//    private double price;
 
     @Embedded
-    private Price price;
+    private Price cost;
 
-    public List<SoldProduct> getSoldProductsList()
-    {
-        if (soldProductsList == null)
-        {
+    public List<SoldProduct> getSoldProductsList() {
+        if (soldProductsList == null) {
             soldProductsList = new ArrayList<>();
-            return soldProductsList;
         }
-        else
-            return soldProductsList;
+        return soldProductsList;
     }
 
     @Override
-    public boolean equals(Object o)
-    {
+    public boolean equals(Object o) {
         if (this == o)
             return true;
         if (!(o instanceof CompletedOrder))
@@ -79,11 +74,11 @@ public class CompletedOrder
 
         if (gainedPoints != that.gainedPoints)
             return false;
-        if (Double.compare(that.price.getAmount(), price.getAmount()) != 0)
+        if (Double.compare(that.cost.getAmount(), cost.getAmount()) != 0)
             return false;
-        if (Double.compare(that.price.getTax(), price.getTax()) != 0)
+        if (Double.compare(that.cost.getTax(), cost.getTax()) != 0)
             return false;
-        if (Double.compare(that.price.getPrice(), price.getPrice()) != 0)
+        if (Double.compare(that.cost.getPrice(), cost.getPrice()) != 0)
             return false;
         if (timeOfSale != null ? !timeOfSale.equals(that.timeOfSale) : that.timeOfSale != null)
             return false;
@@ -92,18 +87,17 @@ public class CompletedOrder
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         int result;
         long temp;
         result = timeOfSale != null ? timeOfSale.hashCode() : 0;
         result = 31 * result + syntheticId.hashCode();
         result = 31 * result + (int) (gainedPoints ^ (gainedPoints >>> 32));
-        temp = Double.doubleToLongBits(price.getAmount());
+        temp = Double.doubleToLongBits(cost.getAmount());
         result = 31 * result + (int) (temp ^ (temp >>> 32));
-        temp = Double.doubleToLongBits(price.getTax());
+        temp = Double.doubleToLongBits(cost.getTax());
         result = 31 * result + (int) (temp ^ (temp >>> 32));
-        temp = Double.doubleToLongBits(price.getPrice());
+        temp = Double.doubleToLongBits(cost.getPrice());
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         return result;
     }

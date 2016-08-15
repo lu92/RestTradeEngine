@@ -20,7 +20,7 @@ public class PriceValidator implements Validator
     {
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "amount", "amount.required");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "tax", "tax.required");
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "price", "price.required");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "cost", "cost.required");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "currency", "currency.required");
         Price price = (Price) object;
 
@@ -31,9 +31,9 @@ public class PriceValidator implements Validator
             errors.rejectValue("tax", "negativeValue", new Object[]{"'tax'"}, "tax can't be negative");
 
         if (price.getPrice() <= 0)
-            errors.rejectValue("price", "negativeValue", new Object[]{"'price'"}, "price can't be zero or negative");
+            errors.rejectValue("cost", "negativeValue", new Object[]{"'cost'"}, "cost can't be zero or negative");
 
         if (price.getAmount() + price.getTax() != price.getPrice())
-            errors.rejectValue("price", "negativeValue", new Object[]{"'price'"}, "price doesn't equal to sum of amount and tax");
+            errors.rejectValue("cost", "negativeValue", new Object[]{"'cost'"}, "cost doesn't equal to sum of amount and tax");
     }
 }

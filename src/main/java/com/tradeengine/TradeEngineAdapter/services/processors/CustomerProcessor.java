@@ -5,7 +5,6 @@ import com.tradeengine.ProfileReader.CustomerDto;
 import com.tradeengine.ProfileReader.CustomerDtoList;
 import com.tradeengine.ShoppingHistory.ShoppingHistoryDto;
 import com.tradeengine.TradeEngineAdapter.model.Customer;
-import com.tradeengine.TradeEngineAdapter.model.ShoppingHistory;
 import com.tradeengine.TradeEngineAdapter.model.dto.CustomerDTO;
 import com.tradeengine.TradeEngineAdapter.services.layers.CustomerSupportLayer;
 import com.tradeengine.common.Message;

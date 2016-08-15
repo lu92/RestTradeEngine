@@ -3,7 +3,7 @@ package com.tradeengine.TradeEngine.services;
 import com.tradeengine.TradeEngine.dto.CategoryDto;
 import com.tradeengine.TradeEngine.dto.CategoryListDto;
 import com.tradeengine.TradeEngine.dto.CreateCategoryDto;
-import com.tradeengine.TradeEngine.dto.ProductCriteria;
+import com.tradeengine.TradeEngine.dto.productCriteria.ProductCriteria;
 import com.tradeengine.TradeEngine.dto.ProductDto;
 import com.tradeengine.TradeEngine.dto.ProductListDto;
 import com.tradeengine.TradeEngine.dto.ProductSchemeDto;

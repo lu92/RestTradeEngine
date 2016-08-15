@@ -32,7 +32,7 @@ public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "productId")
+    @Column(name = "soldProductId")
     private Long productId;
     private String commercialName;
     private String productDescription;
@@ -52,9 +52,24 @@ public class Product {
     private List<ProductSpecification> productSpecificationList;
 
     public List<ProductSpecification> getProductSpecificationList() {
-        if (productSpecificationList == null)
+        if (productSpecificationList == null) {
             productSpecificationList = new ArrayList<>();
-
+        }
         return productSpecificationList;
+    }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "productId=" + productId +
+                ", commercialName='" + commercialName + '\'' +
+                ", productDescription='" + productDescription + '\'' +
+                ", isAvailable=" + isAvailable +
+                ", quantity=" + quantity +
+                ", price=" + price +
+                ", imagePath='" + imagePath + '\'' +
+                ", category=" + category.getName() +
+                ", productSpecificationList=" + productSpecificationList +
+                '}';
     }
 }

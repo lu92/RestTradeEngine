@@ -13,8 +13,11 @@ import java.util.List;
 @AllArgsConstructor
 public class ProductListDto
 {
+    /*
+    szukanie produktów względem pewnych kryteriow
+    kryteria są związane z ProductDescription pzede wszystkim
+     */
     private Message message;
     private String category;
-    private long amountOfProducts;
     private List<ProductInfo> productList;
 }

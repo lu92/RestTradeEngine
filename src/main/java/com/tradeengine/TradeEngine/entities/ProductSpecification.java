@@ -1,5 +1,6 @@
 package com.tradeengine.TradeEngine.entities;
 
+import com.tradeengine.TradeEngine.dto.productCriteria.ValueType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import java.util.Optional;
 
 @Data
 @Entity
@@ -27,10 +29,10 @@ public class ProductSpecification
         examples:
 
         ProductSpecification hardDrive = ProductSpecification.builder()
-            .property("Capacity").value("256").unitOfValue("GB").valueType("java.lang.Integer.class").build();
+            .property("Capacity").value("256").unitOfValue("GB").valueType(NUMBER).build();
 
         ProductSpecification author = ProductSpecification.builder()
-            .property("Author").value("George R. R. Martin").unitOfValue("").valueType("java.lang.String.class").build();
+            .property("Author").value("George R. R. Martin").unitOfValue("").valueType(TEXT).build();
 
     */
 
@@ -39,9 +41,20 @@ public class ProductSpecification
     private String property;
     private String value;
     private String unitOfValue;
-    private String valueType;
+    private ValueType valueType;
 
     @ManyToOne
-    @JoinColumn(name = "productId")
+    @JoinColumn(name = "soldProductId")
     private Product product;
+
+    @Override
+    public String toString() {
+        return "ProductSpecification{" +
+                "productDescriptionId=" + productDescriptionId +
+                ", property='" + property + '\'' +
+                ", value='" + value + '\'' +
+                ", unitOfValue='" + unitOfValue + '\'' +
+                ", valueType=" + valueType +
+                '}';
+    }
 }

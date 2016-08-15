@@ -2,7 +2,6 @@ package com.tradeengine.ShoppingHistory.controllers;
 
 import com.tradeengine.ShoppingHistory.ShoppingHistoryDto;
 import com.tradeengine.ShoppingHistory.entities.CompletedOrder;
-import com.tradeengine.ShoppingHistory.entities.CompletedOrder;
 import com.tradeengine.ShoppingHistory.services.ShoppingHistoryServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;

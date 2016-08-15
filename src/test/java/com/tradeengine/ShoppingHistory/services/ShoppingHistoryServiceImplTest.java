@@ -13,6 +13,7 @@ import static com.tradeengine.common.Message.Status.*;
 import static org.fest.assertions.Assertions.*;
 
 import com.tradeengine.ShoppingHistory.repositories.SoldProductRepository;
+import com.tradeengine.common.entities.Price;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,10 +27,9 @@ import org.springframework.transaction.annotation.Transactional;
 import static com.tradeengine.ShoppingHistoryTestData.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = { ShoppingHistoryIntegrationContext.class })
+@SpringApplicationConfiguration(classes = {ShoppingHistoryIntegrationContext.class})
 @Rollback(true)
-public class ShoppingHistoryServiceImplTest
-{
+public class ShoppingHistoryServiceImplTest {
     @Autowired
     private ShoppingHistoryServiceImpl shoppingHistoryService;
 
@@ -47,8 +47,7 @@ public class ShoppingHistoryServiceImplTest
 
     @Test
     @Transactional
-    public void testCreateAndGetShoppingHistory()
-    {
+    public void testCreateAndGetShoppingHistory() {
         Mockito.when(customerRepository.exists(Mockito.anyLong())).thenReturn(true);
 
         ShoppingHistoryDto shoppingHistoryDto_CREATE = shoppingHistoryService.createShoppingHistory(1);
@@ -65,8 +64,7 @@ public class ShoppingHistoryServiceImplTest
         final ShoppingHistory EXPECTED_SHOPPING_HISTORY = ShoppingHistory.builder()
                 .shoppingHistoryId(shoppingHistoryDto_GET.getShoppingHistory().getShoppingHistoryId())
                 .customerId(1L)
-                .totalAmount(0)
-                .totalTaxes(0)
+                .spendMoney(Price.builder().amount(0).tax(0).build())
                 .build();
 
         Assert.assertThat(shoppingHistoryDto_GET.getShoppingHistory(), MyMatchers.sameAs(EXPECTED_SHOPPING_HISTORY));
@@ -74,8 +72,7 @@ public class ShoppingHistoryServiceImplTest
 
     @Test
     @Transactional
-    public void testGetShoppingHistoryWhenDoesntExistExpectFailure()
-    {
+    public void testGetShoppingHistoryWhenDoesntExistExpectFailure() {
         final int FAKE_CUSTOMER_ID = -1;
         ShoppingHistoryDto shoppingHistoryDto_GET = shoppingHistoryService.getShoppingHistory(FAKE_CUSTOMER_ID);
         assertThat(shoppingHistoryDto_GET.getMessage().getStatus()).isEqualTo(FAILURE);
@@ -86,8 +83,7 @@ public class ShoppingHistoryServiceImplTest
 
     @Test
     @Transactional
-    public void testTryToCreateTwoShoppingHistoryRelatedWithSameCustomerExpectFailure()
-    {
+    public void testTryToCreateTwoShoppingHistoryRelatedWithSameCustomerExpectFailure() {
         final int CUSTOMER_ID = 100;
 
         ShoppingHistoryDto shoppingHistoryDto_CREATE = shoppingHistoryService.createShoppingHistory(CUSTOMER_ID);
@@ -107,8 +103,7 @@ public class ShoppingHistoryServiceImplTest
 
     @Test
     @Transactional
-    public void testAddOrderWhenCustomerDoesNotExistExpectFailure()
-    {
+    public void testAddOrderWhenCustomerDoesNotExistExpectFailure() {
         CompletedOrder completedOrder = CompletedOrder.builder().build();
         ShoppingHistoryDto shoppingHistoryDto = shoppingHistoryService.addOrder(-1, completedOrder);
         assertThat(shoppingHistoryDto.getMessage().getStatus()).isEqualTo(FAILURE);
@@ -118,8 +113,7 @@ public class ShoppingHistoryServiceImplTest
 
     @Test
     @Transactional
-    public void testAddEmptyOrderExpectFailure()
-    {
+    public void testAddEmptyOrderExpectFailure() {
         final int CUSTOMER_ID = 100;
 
         Mockito.when(customerRepository.exists(Mockito.anyLong())).thenReturn(true);
@@ -139,8 +133,7 @@ public class ShoppingHistoryServiceImplTest
 
     @Test
     @Transactional
-    public void testAddOrderExpectSuccess()
-    {
+    public void testAddOrderExpectSuccess() {
         final int CUSTOMER_ID = 100;
 
         Mockito.when(customerRepository.exists(Mockito.anyLong())).thenReturn(true);
@@ -164,8 +157,7 @@ public class ShoppingHistoryServiceImplTest
 
     @Test
     @Transactional
-    public void testAddTwoOrdersExpectSuccess()
-    {
+    public void testAddTwoOrdersExpectSuccess() {
         final int CUSTOMER_ID = 100;
 
         Mockito.when(customerRepository.exists(Mockito.anyLong())).thenReturn(true);

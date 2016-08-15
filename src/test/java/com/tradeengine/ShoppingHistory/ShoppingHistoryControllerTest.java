@@ -1,7 +1,5 @@
 package com.tradeengine.ShoppingHistory;
 
-import com.tradeengine.ShoppingHistory.entities.CompletedOrder;
-import com.tradeengine.ShoppingHistory.entities.ShoppingHistory;
 import com.tradeengine.ShoppingHistory.services.ShoppingHistoryServiceImpl;
 import com.tradeengine.TestUtils;
 import com.tradeengine.common.Message;
@@ -19,7 +17,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static com.tradeengine.ProfileReaderTestData.CUSTOMER;
 import static com.tradeengine.ShoppingHistoryTestData.COMPLETED_ORDER_1;
 import static com.tradeengine.ShoppingHistoryTestData.SHOPPING_HISTORY;
 import static org.hamcrest.Matchers.equalTo;
@@ -68,38 +65,38 @@ public class ShoppingHistoryControllerTest
                 .andExpect(jsonPath("$.shoppingHistory.customerId", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCustomerId().intValue())))
                 .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].orderId", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getOrderId().intValue())))
                 .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].timeOfSale", equalTo(TestUtils.LocalDateTime2JSonFigure(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getTimeOfSale()))))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[0].productId", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(0).getProductId().intValue())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[0].soldProductId", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(0).getSoldProductId().intValue())))
                 .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[0].quantity", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(0).getQuantity())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[0].price.amount", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(0).getPrice().getAmount())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[0].price.tax", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(0).getPrice().getTax())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[0].price.price", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(0).getPrice().getPrice())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[0].price.currency", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(0).getPrice().getCurrency())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[0].cost.amount", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(0).getPrice().getAmount())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[0].cost.tax", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(0).getPrice().getTax())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[0].cost.cost", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(0).getPrice().getPrice())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[0].cost.currency", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(0).getPrice().getCurrency())))
 
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[1].productId", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(1).getProductId().intValue())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[1].soldProductId", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(1).getSoldProductId().intValue())))
                 .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[1].quantity", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(1).getQuantity())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[1].price.amount", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(1).getPrice().getAmount())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[1].price.tax", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(1).getPrice().getTax())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[1].price.price", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(1).getPrice().getPrice())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[1].price.currency", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(1).getPrice().getCurrency())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[1].cost.amount", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(1).getPrice().getAmount())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[1].cost.tax", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(1).getPrice().getTax())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[1].cost.cost", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(1).getPrice().getPrice())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[1].cost.currency", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(1).getPrice().getCurrency())))
 
                 .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].orderId", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getOrderId().intValue())))
                 .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].timeOfSale", equalTo(TestUtils.LocalDateTime2JSonFigure(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getTimeOfSale()))))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[0].productId", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(0).getProductId().intValue())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[0].soldProductId", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(0).getSoldProductId().intValue())))
                 .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[0].quantity", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(0).getQuantity())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[0].price.amount", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(0).getPrice().getAmount())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[0].price.tax", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(0).getPrice().getTax())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[0].price.price", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(0).getPrice().getPrice())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[0].price.currency", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(0).getPrice().getCurrency())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[0].cost.amount", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(0).getPrice().getAmount())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[0].cost.tax", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(0).getPrice().getTax())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[0].cost.cost", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(0).getPrice().getPrice())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[0].cost.currency", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(0).getPrice().getCurrency())))
 
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[1].productId", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(1).getProductId().intValue())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[1].soldProductId", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(1).getSoldProductId().intValue())))
                 .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[1].quantity", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(1).getQuantity())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[1].price.amount", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(1).getPrice().getAmount())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[1].price.tax", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(1).getPrice().getTax())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[1].price.price", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(1).getPrice().getPrice())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[1].price.currency", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(1).getPrice().getCurrency())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[1].cost.amount", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(1).getPrice().getAmount())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[1].cost.tax", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(1).getPrice().getTax())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[1].cost.cost", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(1).getPrice().getPrice())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[1].cost.currency", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(1).getPrice().getCurrency())))
 
-                .andExpect(jsonPath("$.shoppingHistory.totalAmount", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getTotalAmount())))
-                .andExpect(jsonPath("$.shoppingHistory.totalTaxes", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getTotalTaxes())))
+                .andExpect(jsonPath("$.shoppingHistory.totalAmount", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getSpendMoney().getAmount())))
+                .andExpect(jsonPath("$.shoppingHistory.totalTaxes", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getSpendMoney().getTax())))
                 .andReturn().getResponse().getContentAsString();
 
         logger.info("RS = " + RS);
@@ -141,38 +138,38 @@ public class ShoppingHistoryControllerTest
                 .andExpect(jsonPath("$.shoppingHistory.customerId", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCustomerId().intValue())))
                 .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].orderId", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getOrderId().intValue())))
                 .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].timeOfSale", equalTo(TestUtils.LocalDateTime2JSonFigure(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getTimeOfSale()))))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[0].productId", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(0).getProductId().intValue())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[0].soldProductId", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(0).getSoldProductId().intValue())))
                 .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[0].quantity", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(0).getQuantity())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[0].price.amount", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(0).getPrice().getAmount())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[0].price.tax", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(0).getPrice().getTax())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[0].price.price", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(0).getPrice().getPrice())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[0].price.currency", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(0).getPrice().getCurrency())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[0].cost.amount", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(0).getPrice().getAmount())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[0].cost.tax", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(0).getPrice().getTax())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[0].cost.cost", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(0).getPrice().getPrice())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[0].cost.currency", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(0).getPrice().getCurrency())))
 
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[1].productId", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(1).getProductId().intValue())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[1].soldProductId", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(1).getSoldProductId().intValue())))
                 .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[1].quantity", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(1).getQuantity())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[1].price.amount", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(1).getPrice().getAmount())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[1].price.tax", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(1).getPrice().getTax())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[1].price.price", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(1).getPrice().getPrice())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[1].price.currency", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(1).getPrice().getCurrency())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[1].cost.amount", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(1).getPrice().getAmount())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[1].cost.tax", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(1).getPrice().getTax())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[1].cost.cost", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(1).getPrice().getPrice())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[1].cost.currency", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(1).getPrice().getCurrency())))
 
                 .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].orderId", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getOrderId().intValue())))
                 .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].timeOfSale", equalTo(TestUtils.LocalDateTime2JSonFigure(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getTimeOfSale()))))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[0].productId", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(0).getProductId().intValue())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[0].soldProductId", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(0).getSoldProductId().intValue())))
                 .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[0].quantity", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(0).getQuantity())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[0].price.amount", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(0).getPrice().getAmount())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[0].price.tax", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(0).getPrice().getTax())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[0].price.price", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(0).getPrice().getPrice())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[0].price.currency", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(0).getPrice().getCurrency())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[0].cost.amount", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(0).getPrice().getAmount())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[0].cost.tax", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(0).getPrice().getTax())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[0].cost.cost", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(0).getPrice().getPrice())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[0].cost.currency", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(0).getPrice().getCurrency())))
 
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[1].productId", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(1).getProductId().intValue())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[1].soldProductId", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(1).getSoldProductId().intValue())))
                 .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[1].quantity", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(1).getQuantity())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[1].price.amount", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(1).getPrice().getAmount())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[1].price.tax", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(1).getPrice().getTax())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[1].price.price", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(1).getPrice().getPrice())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[1].price.currency", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(1).getPrice().getCurrency())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[1].cost.amount", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(1).getPrice().getAmount())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[1].cost.tax", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(1).getPrice().getTax())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[1].cost.cost", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(1).getPrice().getPrice())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[1].cost.currency", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(1).getPrice().getCurrency())))
 
-                .andExpect(jsonPath("$.shoppingHistory.totalAmount", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getTotalAmount())))
-                .andExpect(jsonPath("$.shoppingHistory.totalTaxes", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getTotalTaxes())))
+                .andExpect(jsonPath("$.shoppingHistory.totalAmount", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getSpendMoney().getAmount())))
+                .andExpect(jsonPath("$.shoppingHistory.totalTaxes", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getSpendMoney().getTax())))
                 .andReturn().getResponse().getContentAsString();
 
         logger.info("RS = " + RS);
@@ -267,38 +264,38 @@ public class ShoppingHistoryControllerTest
                 .andExpect(jsonPath("$.shoppingHistory.customerId", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCustomerId().intValue())))
                 .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].orderId", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getOrderId().intValue())))
                 .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].timeOfSale", equalTo(TestUtils.LocalDateTime2JSonFigure(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getTimeOfSale()))))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[0].productId", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(0).getProductId().intValue())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[0].soldProductId", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(0).getSoldProductId().intValue())))
                 .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[0].quantity", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(0).getQuantity())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[0].price.amount", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(0).getPrice().getAmount())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[0].price.tax", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(0).getPrice().getTax())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[0].price.price", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(0).getPrice().getPrice())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[0].price.currency", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(0).getPrice().getCurrency())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[0].cost.amount", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(0).getPrice().getAmount())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[0].cost.tax", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(0).getPrice().getTax())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[0].cost.cost", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(0).getPrice().getPrice())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[0].cost.currency", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(0).getPrice().getCurrency())))
 
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[1].productId", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(1).getProductId().intValue())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[1].soldProductId", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(1).getSoldProductId().intValue())))
                 .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[1].quantity", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(1).getQuantity())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[1].price.amount", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(1).getPrice().getAmount())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[1].price.tax", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(1).getPrice().getTax())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[1].price.price", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(1).getPrice().getPrice())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[1].price.currency", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(1).getPrice().getCurrency())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[1].cost.amount", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(1).getPrice().getAmount())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[1].cost.tax", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(1).getPrice().getTax())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[1].cost.cost", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(1).getPrice().getPrice())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[0].soldProductsList[1].cost.currency", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(0).getSoldProductsList().get(1).getPrice().getCurrency())))
 
                 .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].orderId", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getOrderId().intValue())))
                 .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].timeOfSale", equalTo(TestUtils.LocalDateTime2JSonFigure(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getTimeOfSale()))))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[0].productId", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(0).getProductId().intValue())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[0].soldProductId", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(0).getSoldProductId().intValue())))
                 .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[0].quantity", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(0).getQuantity())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[0].price.amount", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(0).getPrice().getAmount())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[0].price.tax", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(0).getPrice().getTax())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[0].price.price", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(0).getPrice().getPrice())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[0].price.currency", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(0).getPrice().getCurrency())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[0].cost.amount", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(0).getPrice().getAmount())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[0].cost.tax", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(0).getPrice().getTax())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[0].cost.cost", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(0).getPrice().getPrice())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[0].cost.currency", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(0).getPrice().getCurrency())))
 
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[1].productId", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(1).getProductId().intValue())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[1].soldProductId", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(1).getSoldProductId().intValue())))
                 .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[1].quantity", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(1).getQuantity())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[1].price.amount", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(1).getPrice().getAmount())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[1].price.tax", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(1).getPrice().getTax())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[1].price.price", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(1).getPrice().getPrice())))
-                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[1].price.currency", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(1).getPrice().getCurrency())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[1].cost.amount", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(1).getPrice().getAmount())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[1].cost.tax", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(1).getPrice().getTax())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[1].cost.cost", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(1).getPrice().getPrice())))
+                .andExpect(jsonPath("$.shoppingHistory.completedOrderList[1].soldProductsList[1].cost.currency", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getCompletedOrderList().get(1).getSoldProductsList().get(1).getPrice().getCurrency())))
 
-                .andExpect(jsonPath("$.shoppingHistory.totalAmount", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getTotalAmount())))
-                .andExpect(jsonPath("$.shoppingHistory.totalTaxes", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getTotalTaxes())))
+                .andExpect(jsonPath("$.shoppingHistory.totalAmount", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getSpendMoney().getAmount())))
+                .andExpect(jsonPath("$.shoppingHistory.totalTaxes", equalTo(SHOPPING_HISTORY_DTO.getShoppingHistory().getSpendMoney().getTax())))
                 .andReturn().getResponse().getContentAsString();
 
         logger.info("RS = " + RS);

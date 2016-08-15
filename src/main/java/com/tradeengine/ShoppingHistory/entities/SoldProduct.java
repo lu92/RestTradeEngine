@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Builder;
+import org.hibernate.annotations.Proxy;
 
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -17,12 +18,14 @@ import javax.persistence.ManyToOne;
 @Data
 @Builder
 @Entity
+@Proxy(lazy = false)
 @NoArgsConstructor
 @AllArgsConstructor
-public class SoldProduct
-{
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long productId;
+public class SoldProduct {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long soldProductId;
+    private Long productID; //  to determine proper product
     private String sintheticId;
     private int quantity;
 
@@ -34,8 +37,7 @@ public class SoldProduct
     private CompletedOrder completedOrder;
 
     @Override
-    public boolean equals(Object o)
-    {
+    public boolean equals(Object o) {
         if (this == o)
             return true;
         if (!(o instanceof SoldProduct))
@@ -53,8 +55,7 @@ public class SoldProduct
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         int result = quantity;
         result = 31 * result + price.hashCode();
         result = 31 * result + (completedOrder != null ? completedOrder.hashCode() : 0);
