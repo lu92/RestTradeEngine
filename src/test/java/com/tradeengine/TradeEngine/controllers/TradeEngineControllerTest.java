@@ -154,8 +154,12 @@ public class TradeEngineControllerTest {
                 .andExpect(jsonPath("$.message.message", equalTo("Product scheme has been delivered!")))
                 .andExpect(jsonPath("$.message.status", equalTo(SUCCESS.toString())))
                 .andExpect(jsonPath("$.productScheme.categoryName", equalTo(productSchemeDto.getProductScheme().getCategoryName())))
-                .andExpect(jsonPath("$.productScheme.basicProductSchema", equalTo(productSchemeDto.getProductScheme().getBasicProductSchema())))
-
+                .andExpect(jsonPath("$.productScheme.productSchemeElements[0].property", equalTo(productSchemeDto.getProductScheme().getProductSchemeElements().get(0).getProperty())))
+                .andExpect(jsonPath("$.productScheme.productSchemeElements[0].valueType", equalTo(productSchemeDto.getProductScheme().getProductSchemeElements().get(0).getValueType().toString())))
+                .andExpect(jsonPath("$.productScheme.productSchemeElements[0].unit", equalTo(productSchemeDto.getProductScheme().getProductSchemeElements().get(0).getUnit())))
+                .andExpect(jsonPath("$.productScheme.productSchemeElements[1].property", equalTo(productSchemeDto.getProductScheme().getProductSchemeElements().get(1).getProperty())))
+                .andExpect(jsonPath("$.productScheme.productSchemeElements[1].valueType", equalTo(productSchemeDto.getProductScheme().getProductSchemeElements().get(1).getValueType().toString())))
+                .andExpect(jsonPath("$.productScheme.productSchemeElements[1].unit", equalTo(productSchemeDto.getProductScheme().getProductSchemeElements().get(1).getUnit())))
                 .andReturn().getResponse().getContentAsString();
 
         logger.info("RS = " + RS);

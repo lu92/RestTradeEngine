@@ -2,26 +2,29 @@ package com.tradeengine.TradeEngine.dto;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tradeengine.TradeEngine.dto.productCriteria.ValueType;
 import org.junit.Test;
 
-import java.util.HashMap;
+import static java.util.Arrays.asList;
 
-public class ProductSchemeTest
-{
+public class ProductSchemeTest {
+
     @Test
-    public void test() throws JsonProcessingException
-    {
+    public void test() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
-        String json = "";
 
-        ProductScheme productShemaDto = new ProductScheme();
-        productShemaDto.setCategoryName("Phones");
-        productShemaDto.setBasicProductSchema(new HashMap<String, String>(){{
-            put("producent", "java.lang.String.class");
-            put("screen", "java.lang.Integer.class");
-        }});
+        ProductScheme productSchemeDto = new ProductScheme();
+        productSchemeDto.setCategoryName("Phones");
+        productSchemeDto.setProductSchemeElements(asList(
+                new ProductSchemeElement("producer", ValueType.TEXT, ""),
+                new ProductSchemeElement("screen", ValueType.NUMBER, "cal")));
 
-        json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(productShemaDto);
+//        productSchemeDto.setBasicProductSchema(new HashMap<String, String>(){{
+//            put("producer", "java.lang.String.class");
+//            put("screen", "java.lang.Integer.class");
+//        }});
+
+        String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(productSchemeDto);
 
         // pretty print
         System.out.println(json);

@@ -1,7 +1,6 @@
 package com.tradeengine.TradeEngine;
 
 import com.tradeengine.TradeEngine.dto.CategoryInfo;
-import static com.tradeengine.TradeEngine.dto.productCriteria.ValueType.*;
 import com.tradeengine.TradeEngine.entities.Category;
 import com.tradeengine.TradeEngine.entities.Product;
 import com.tradeengine.TradeEngine.entities.ProductSpecification;
@@ -11,10 +10,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class TradeEngineTestData
-{
-    private TradeEngineTestData()
-    {
+import static com.tradeengine.TradeEngine.dto.productCriteria.ValueType.NUMBER;
+import static com.tradeengine.TradeEngine.dto.productCriteria.ValueType.TEXT;
+
+public class TradeEngineTestData {
+    private TradeEngineTestData() {
     }
 
     public static final long FAKE_CATEGORY_ID = -1;
@@ -22,13 +22,20 @@ public class TradeEngineTestData
 
     public static final long FAKE_PRODUCT_ID = -1;
 
-    public static final String PHONES_PRODUCT_SCHEME = "{"
-            + "  \"categoryName\" : \"Phones\","
-            + "  \"basicProductSchema\" : {"
-            + "    \"producer\" : \"java.lang.String.class\","
-            + "    \"screen\" : \"java.lang.Integer.class\""
-            + "  }"
-            + "}";
+    public static final String PHONES_PRODUCT_SCHEME =
+            "{"
+                    + "\"categoryName\": \"Phones\","
+                    + "\"productSchemeElements\": [{"
+                    + "\"property\": \"producer\","
+                    + "\"valueType\": \"TEXT\","
+                    + "\"unit\": \"\""
+                    + "},"
+                    + "{"
+                    + "\"property\": \"screen\","
+                    + "\"valueType\": \"NUMBER\","
+                    + "\"unit\": \"cal\""
+                    + "}]"
+                    + "}";
 
     public static final String LAPTOPS_PRODUCT_SCHEME = "{"
             + "  \"categoryName\" : \"Laptops\","
@@ -54,8 +61,7 @@ public class TradeEngineTestData
     public static final Product PRODUCT_COMPUTER = Product.builder().commercialName("computer").price(Price.builder().amount(3000).tax(600).price(3600).build())
             .productSpecificationList(Arrays.asList(ProductSpecification.builder().property("Capacity").value("256").unitOfValue("GB").valueType(NUMBER).build())).build();
 
-    public static final List<Product> PRODUCT_LIST = new ArrayList<Product>()
-    {{
+    public static final List<Product> PRODUCT_LIST = new ArrayList<Product>() {{
         add(PRODUCT);
         add(PRODUCT_COMPUTER);
     }};

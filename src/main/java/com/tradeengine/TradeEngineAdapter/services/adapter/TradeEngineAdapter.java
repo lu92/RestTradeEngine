@@ -8,7 +8,6 @@ import com.tradeengine.TradeEngine.dto.*;
 import com.tradeengine.TradeEngine.dto.productCriteria.ProductCriteria;
 import com.tradeengine.TradeEngine.entities.Product;
 import com.tradeengine.TradeEngineAdapter.model.Basket;
-import com.tradeengine.TradeEngineAdapter.model.Discount;
 import com.tradeengine.TradeEngineAdapter.model.Order;
 import com.tradeengine.TradeEngineAdapter.model.dto.CustomerDTO;
 import com.tradeengine.TradeEngineAdapter.services.downlines.BasketRestService;

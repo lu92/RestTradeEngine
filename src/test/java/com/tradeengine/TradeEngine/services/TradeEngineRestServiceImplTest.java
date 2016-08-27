@@ -2,6 +2,7 @@ package com.tradeengine.TradeEngine.services;
 
 import com.tradeengine.TradeEngine.TradeEngineServiceContext;
 import com.tradeengine.TradeEngine.dto.*;
+import static com.tradeengine.TradeEngine.dto.productCriteria.ValueType.*;
 import com.tradeengine.TradeEngine.entities.Category;
 import com.tradeengine.TradeEngine.entities.Product;
 import com.tradeengine.TradeEngine.mappers.TradeEngineMapper;
@@ -222,8 +223,12 @@ public class TradeEngineRestServiceImplTest {
         assertThat(GET_productSchemeForCategory.getMessage().getStatus()).isEqualTo(SUCCESS);
         assertThat(GET_productSchemeForCategory.getMessage().getMessage()).isEqualTo("Product scheme has been delivered!");
         assertThat(GET_productSchemeForCategory.getProductScheme().getCategoryName()).isEqualTo("Phones");
-        assertThat(GET_productSchemeForCategory.getProductScheme().getBasicProductSchema().get("producer")).isEqualTo("java.lang.String.class");
-        assertThat(GET_productSchemeForCategory.getProductScheme().getBasicProductSchema().get("screen")).isEqualTo("java.lang.Integer.class");
+        assertThat(GET_productSchemeForCategory.getProductScheme().getProductSchemeElements().get(0).getProperty()).isEqualTo("producer");
+        assertThat(GET_productSchemeForCategory.getProductScheme().getProductSchemeElements().get(0).getValueType()).isEqualTo(TEXT);
+        assertThat(GET_productSchemeForCategory.getProductScheme().getProductSchemeElements().get(0).getUnit()).isEqualTo("");
+        assertThat(GET_productSchemeForCategory.getProductScheme().getProductSchemeElements().get(1).getProperty()).isEqualTo("screen");
+        assertThat(GET_productSchemeForCategory.getProductScheme().getProductSchemeElements().get(1).getValueType()).isEqualTo(NUMBER);
+        assertThat(GET_productSchemeForCategory.getProductScheme().getProductSchemeElements().get(1).getUnit()).isEqualTo("cal");
     }
 
     @Test
