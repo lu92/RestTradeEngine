@@ -199,7 +199,7 @@ public class TradeEngineControllerTest {
         Product product = tradeEngineMapper.convertProduct(createProductDto);
         ProductInfo productInfo = tradeEngineMapper.convertProduct(product);
         ProductDto productDto = new ProductDto(new Message("Product has been added!", SUCCESS), productInfo);
-        when(tradeEngineServiceMock.addProduct(createProductDto.getCategoryId(), product)).thenReturn(productDto);
+        when(tradeEngineServiceMock.addProduct(createProductDto)).thenReturn(productDto);
 
         String RS = mockMvc.perform(post(TRADE_ENGINE_PRODUCT_URL)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
@@ -226,9 +226,9 @@ public class TradeEngineControllerTest {
         String RQ = TestUtils.convertObjectToJsonText(createProductDto);
         logger.info("RQ = " + RQ);
 
-        Product product = tradeEngineMapper.convertProduct(createProductDto);
+//        Product product = tradeEngineMapper.convertProduct(createProductDto);
         ProductDto productDto = new ProductDto(new Message("Category doesn't exist!", FAILURE), null);
-        when(tradeEngineServiceMock.addProduct(createProductDto.getCategoryId(), product)).thenReturn(productDto);
+        when(tradeEngineServiceMock.addProduct(createProductDto)).thenReturn(productDto);
 
         System.out.println();
         String RS = mockMvc.perform(post(TRADE_ENGINE_PRODUCT_URL)

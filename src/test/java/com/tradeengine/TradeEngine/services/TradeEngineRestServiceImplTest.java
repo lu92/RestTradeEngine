@@ -4,6 +4,7 @@ import com.tradeengine.TradeEngine.TradeEngineServiceContext;
 import com.tradeengine.TradeEngine.dto.*;
 import com.tradeengine.TradeEngine.entities.Category;
 import com.tradeengine.TradeEngine.entities.Product;
+import com.tradeengine.TradeEngine.mappers.TradeEngineMapper;
 import com.tradeengine.TradeEngine.repositories.CategoryRepository;
 import com.tradeengine.TradeEngine.repositories.ProductRepository;
 import com.tradeengine.TradeEngine.repositories.ProductSpecificationRepository;
@@ -23,7 +24,7 @@ import static org.fest.assertions.Assertions.assertThat;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = {TradeEngineServiceContext.class})
 @Rollback(true)
-public class TradeEngineServiceImplTest {
+public class TradeEngineRestServiceImplTest {
 
     @Autowired
     private ProductRepository productRepository;
@@ -36,6 +37,9 @@ public class TradeEngineServiceImplTest {
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private TradeEngineMapper tradeEngineMapper;
 
     @Test
     @Transactional
@@ -263,7 +267,10 @@ public class TradeEngineServiceImplTest {
         CategoryDto savedCategory = tradeEngineService.createCategory(createCategoryDto);
         assertThat(savedCategory.getMessage().getStatus()).isEqualTo(SUCCESS);
 
-        ProductDto productDto = tradeEngineService.addProduct(savedCategory.getCategoryInfo().getCategoryId(), PRODUCT_SGS7);
+        CreateProductDto createProductDto = tradeEngineMapper.convertToCreateProductDto(PRODUCT_SGS7);
+        createProductDto.setCategoryId(savedCategory.getCategoryInfo().getCategoryId());
+
+        ProductDto productDto = tradeEngineService.addProduct(createProductDto);
         assertThat(productDto.getMessage().getStatus()).isEqualTo(SUCCESS);
 
         assertThat(categoryRepository.count()).isEqualTo(1);

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 @RestController
@@ -63,6 +64,12 @@ public class TradeEngineController {
         return tradeEngineService.getProduct(id);
     }
 
+    @RequestMapping(value = "/Product/GetRequestedProducts", method = RequestMethod.POST)
+    @ResponseBody
+    public ProductListDto getRequestedProductList(@RequestBody RequestedProductsDto productList) {
+        return tradeEngineService.getProductList(productList);
+    }
+
     @RequestMapping(value = "/Product/Find/{categoryName}", method = RequestMethod.GET)
     @ResponseBody
     public ProductListDto getProductList(@PathVariable("categoryName") String categoryName) {
@@ -72,7 +79,8 @@ public class TradeEngineController {
     @RequestMapping(value = "/Product", method = RequestMethod.POST)
     @ResponseBody
     public ProductDto addProduct(@RequestBody CreateProductDto createProductDto) {
-        return tradeEngineService.addProduct(createProductDto.getCategoryId(), tradeEngineMapper.convertProduct(createProductDto));
+//        return tradeEngineService.addProduct(createProductDto.getCategoryId(), tradeEngineMapper.convertProduct(createProductDto));
+        return tradeEngineService.addProduct(createProductDto);
     }
 
     @RequestMapping(value = "/Product", method = RequestMethod.PUT)

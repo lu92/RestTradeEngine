@@ -14,6 +14,6 @@ public class Message
 
     public enum Status
     {
-        SUCCESS, FAILURE
+        SUCCESS, PARTIAL_SUCCESS, FAILURE
     }
 }

@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.tradeengine.common.Message.Status.FAILURE;
+import static com.tradeengine.common.Message.Status.PARTIAL_SUCCESS;
 import static com.tradeengine.common.Message.Status.SUCCESS;
 
 @Service
@@ -125,6 +126,26 @@ public class TradeEngineServiceImpl implements TradeEngineService {
     }
 
     @Override
+    public ProductListDto getProductList(RequestedProductsDto requestedProductsDto) {
+        List<ProductInfo> collectedProducts = requestedProductsDto.getRequestedProducts().stream()
+                .map(productId -> getProduct(productId))
+                .filter(productDto -> productDto.getMessage().getStatus() == SUCCESS)
+                .map(ProductDto::getProductInfo)
+                .collect(Collectors.toList());
+
+        if (collectedProducts.isEmpty())
+            return new ProductListDto(new Message("Any requested product does not exist!", FAILURE), null, new ArrayList<>());
+
+        if (collectedProducts.size() < requestedProductsDto.getRequestedProducts().size())
+            return new ProductListDto(new Message("Some requested product has been delivered!", PARTIAL_SUCCESS), null, collectedProducts);
+
+        if (collectedProducts.size() == requestedProductsDto.getRequestedProducts().size())
+            return new ProductListDto(new Message("All requested product has been delivered!", SUCCESS), null, collectedProducts);
+
+        return new ProductListDto(new Message("INTERNAL ERROR!", FAILURE), null, new ArrayList<>());
+    }
+
+    @Override
     public ProductListDto getAllProductsForCategory(String categoryName) {
         List<Category> categoryList = categoryRepository.findByName(categoryName);
 
@@ -143,7 +164,12 @@ public class TradeEngineServiceImpl implements TradeEngineService {
     }
 
     @Override
-    public ProductDto addProduct(long categoryId, Product product) {
+//    public ProductDto addProduct(long categoryId, Product product) {
+    public ProductDto addProduct(CreateProductDto createProductDto) {
+
+        Product product = tradeEngineMapper.convertProduct(createProductDto);
+        long categoryId = createProductDto.getCategoryId();
+
         if (categoryRepository.exists(categoryId)) {
             Category category = categoryRepository.findOne(categoryId);
             //            product validation

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.tradeengine.ProfileReader.entities.Address;
 import com.tradeengine.common.entities.Price;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -45,13 +46,16 @@ public class CompletedOrder {
     @OneToMany(mappedBy = "completedOrder", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<SoldProduct> soldProductsList;
 
+    @Embedded
+    private Address address;
+
     @ManyToOne
     @JoinColumn(name = "shoppingHistoryId")
     private ShoppingHistory shoppingHistory;
 
     private String syntheticId;
 
-    private long gainedPoints;
+    private Long gainedPoints;
 
     @Embedded
     private Price cost;

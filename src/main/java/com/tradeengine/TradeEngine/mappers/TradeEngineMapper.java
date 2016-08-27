@@ -115,4 +115,42 @@ public class TradeEngineMapper {
 
         return productInfo;
     }
+
+    public CreateProductDto convertToCreateProductDto(Product product) {
+        CreateProductDto createProductDto = new CreateProductDto();
+
+        if (product.getCommercialName() != null)
+            createProductDto.setCommercialName(product.getCommercialName());
+
+        if (product.getProductDescription() != null)
+            createProductDto.setProductDescription(product.getProductDescription());
+
+        createProductDto.setQuantity(product.getQuantity());
+
+        if (product.getPrice() != null)
+            createProductDto.setPrice(Price.builder()
+                    .amount(product.getPrice().getAmount())
+                    .tax(product.getPrice().getTax())
+                    .price(product.getPrice().getPrice())
+                    .currency(product.getPrice().getCurrency())
+                    .build());
+
+        if (product.getImagePath() != null)
+            createProductDto.setImagePath(product.getImagePath());
+
+        if (!product.getProductSpecificationList().isEmpty()) {
+            for (ProductSpecification productSpecification : product.getProductSpecificationList()) {
+                createProductDto.getProductSpecificationList().add(
+                        com.tradeengine.TradeEngine.dto.ProductSpecification.builder()
+                                .property(productSpecification.getProperty())
+                                .value(productSpecification.getValue())
+                                .unitOfValue(productSpecification.getUnitOfValue())
+                                .valueType(productSpecification.getValueType())
+                                .build()
+                );
+            }
+        }
+
+        return createProductDto;
+    }
 }

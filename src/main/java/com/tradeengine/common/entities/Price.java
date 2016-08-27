@@ -12,12 +12,22 @@ import javax.persistence.Embeddable;
 @Embeddable
 @NoArgsConstructor
 @AllArgsConstructor
-public class Price
-{
+public class Price {
     private double amount;
     private double tax;
     private double price;
     private String currency;
+
+    public void addAmount(double amount) {
+        this.amount += amount;
+        this.price += amount;
+    }
+
+    public void addTax(double tax) {
+        this.tax += tax;
+        this.price += tax;
+    }
+
 
     @Override
     public String toString() {

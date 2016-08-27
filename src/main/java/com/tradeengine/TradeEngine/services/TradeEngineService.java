@@ -1,13 +1,10 @@
 package com.tradeengine.TradeEngine.services;
 
-import com.tradeengine.TradeEngine.dto.CategoryDto;
-import com.tradeengine.TradeEngine.dto.CategoryListDto;
-import com.tradeengine.TradeEngine.dto.CreateCategoryDto;
+import com.tradeengine.TradeEngine.dto.*;
 import com.tradeengine.TradeEngine.dto.productCriteria.ProductCriteria;
-import com.tradeengine.TradeEngine.dto.ProductDto;
-import com.tradeengine.TradeEngine.dto.ProductListDto;
-import com.tradeengine.TradeEngine.dto.ProductSchemeDto;
 import com.tradeengine.TradeEngine.entities.Product;
+
+import java.util.List;
 
 public interface TradeEngineService
 {
@@ -20,8 +17,10 @@ public interface TradeEngineService
 
 
     ProductDto getProduct(long productId);
+    ProductListDto getProductList(RequestedProductsDto requestedProductsDto);
     ProductListDto getAllProductsForCategory(String categoryName);
-    ProductDto addProduct(long categoryId, Product product);
+//    ProductDto addProduct(long categoryId, Product product);
+    ProductDto addProduct(CreateProductDto createProductDto);
     ProductDto updateProduct(Product product);
     ProductDto activateProduct(long productId);
     ProductDto deactivateProduct(long productId);

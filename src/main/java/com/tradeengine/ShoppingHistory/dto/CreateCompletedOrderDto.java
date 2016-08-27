@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.tradeengine.ProfileReader.entities.Address;
-import com.tradeengine.ShoppingHistory.entities.SoldProduct;
 import com.tradeengine.common.entities.Price;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,15 +17,14 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CompletedOrderInfo {
-    private Long completedOrderId;
+public class CreateCompletedOrderDto {
+    private long customerId;
 
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime timeOfSale;
     private List<SoldProductInfo> soldProductsList;
     private Address address;
-    private Long ShoppingHistoryId;
     private Long gainedPoints;
     private Price cost;
 

@@ -1,10 +1,15 @@
 package com.tradeengine.ShoppingHistory.dto;
 
 import com.tradeengine.common.Message;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Builder;
 
-/**
- * Created by SG0222895 on 8/3/2016.
- */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ShoppingHistoryDto {
     private Message message;
     private ShoppingHistoryInfo shoppingHistory;

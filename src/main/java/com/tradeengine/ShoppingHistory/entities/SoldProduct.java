@@ -32,6 +32,9 @@ public class SoldProduct {
     @Embedded
     private Price price;
 
+//    @Embedded
+//    private Price totalPrice;
+
     @ManyToOne
     @JoinColumn(name = "orderId")
     private CompletedOrder completedOrder;

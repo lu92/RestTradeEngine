@@ -15,7 +15,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 
 @Configuration
 @EnableAutoConfiguration(exclude = { ShoppingHistoryServiceImpl.class })
-@ComponentScan(basePackages = { "com.tradeengine.ShoppingHistory.entities", "com.tradeengine.ShoppingHistory.repositories", "com.tradeengine.ShoppingHistory.controllers" })
+@ComponentScan(basePackages = { "com.tradeengine.ShoppingHistory.entities", "com.tradeengine.ShoppingHistory.repositories", "com.tradeengine.ShoppingHistory.controllers", "com.tradeengine.ShoppingHistory.mapper"  })
 public class ShoppingHistoryTestContext extends WebMvcConfigurerAdapter
 {
 

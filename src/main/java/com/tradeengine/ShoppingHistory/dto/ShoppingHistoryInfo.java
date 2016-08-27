@@ -14,7 +14,7 @@ import java.util.List;
 public class ShoppingHistoryInfo {
     private Long shoppingHistoryId;
     private Long customerId;
-    private String syntheticId;
+//    private String syntheticId;
     private List<CompletedOrderInfo> completedOrderList;
     private Price spendMoney;
 

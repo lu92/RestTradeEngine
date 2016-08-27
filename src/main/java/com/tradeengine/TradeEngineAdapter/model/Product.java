@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Builder;
+import com.tradeengine.common.entities.Price;
 
 import java.util.List;
 

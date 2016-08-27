@@ -19,3 +19,4 @@ do zaimplementowania:
 
 
 * przy update product trzeba utworzyć nowy product a stary dezaktywować o ile go ktoś kupił, chodzi o historię produktów
+* przeliczanie walut w TradeEngineAdapter

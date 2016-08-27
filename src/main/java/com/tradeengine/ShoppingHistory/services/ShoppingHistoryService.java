@@ -1,17 +1,12 @@
 package com.tradeengine.ShoppingHistory.services;
 
-import com.tradeengine.ShoppingHistory.ShoppingHistoryDto;
-import com.tradeengine.ShoppingHistory.entities.CompletedOrder;
+import com.tradeengine.ShoppingHistory.dto.CreateCompletedOrderDto;
+import com.tradeengine.ShoppingHistory.dto.ShoppingHistoryDto;
 
-public interface ShoppingHistoryService
-{
-//    ShoppingHistoryDto getShoppingHistory(long customerId);
-//
-//    ShoppingHistoryDto createShoppingHistory(long customerId);
-//
-//    ShoppingHistoryDto addOrder(long customerId, Order order);
-
+public interface ShoppingHistoryService {
     ShoppingHistoryDto getShoppingHistory(long customerId);
+
     ShoppingHistoryDto createShoppingHistory(long customerId);
-    ShoppingHistoryDto addOrder(long customerId, CompletedOrder completedOrder);
+
+    ShoppingHistoryDto addOrder(CreateCompletedOrderDto createCompletedOrderDto);
 }
