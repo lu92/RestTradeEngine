@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.tradeengine.common.Message.Status.FAILURE;
@@ -45,10 +46,16 @@ public class TradeEngineServiceImpl implements TradeEngineService {
     public CategoryListDto getCategoryList() {
         List<Category> categorylist = categoryRepository.findAll();
         if (categorylist.isEmpty()) {
-            return new CategoryListDto(new Message("category list is empty", SUCCESS), true, new ArrayList<>());
+            return new CategoryListDto(new Message("category list is empty", SUCCESS), new ArrayList<>());
         } else {
-            List<String> collectedCategoriesNames = categorylist.stream().map(category -> category.getName()).collect(Collectors.toList());
-            return new CategoryListDto(new Message("category list is filled", SUCCESS), false, collectedCategoriesNames);
+
+            Function<Category, CategoryElement> toCategoryElement =
+                    category -> new CategoryElement(category.getCategoryId(), category.getName(), category.getProductSchemaJsonFigure());
+
+            List<CategoryElement> collectedCategories = categorylist.stream().map(toCategoryElement)
+                    .collect(Collectors.toList());
+
+            return new CategoryListDto(new Message("category list is filled", SUCCESS), collectedCategories);
         }
     }
 
