@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,8 +14,6 @@ import java.util.List;
 @AllArgsConstructor
 public class Basket {
     private Long customerId;
-    private LocalDateTime timeOfSale;
-    private String targetCurrency;
     private List<ProductInfo> productList;
     private Address address;
 

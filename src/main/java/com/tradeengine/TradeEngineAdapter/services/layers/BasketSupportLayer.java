@@ -1,19 +1,32 @@
 package com.tradeengine.TradeEngineAdapter.services.layers;
 
 import com.tradeengine.TradeEngineAdapter.model.Basket;
-import com.tradeengine.TradeEngineAdapter.model.Discount;
 import com.tradeengine.TradeEngineAdapter.model.Order;
 
-public interface BasketSupportLayer {
-    boolean checkProductsAvailability(Basket basket);
+public abstract class BasketSupportLayer {
+    protected abstract Order createOrder(Basket basket);
 
-    Order calculateOrder(Basket basket);
+    protected abstract Order checkProductsAvailability(Order order);
 
-    Order calculatePoints(Order order);
+    protected abstract Order calculateOrder(Order order);
 
-    Order calculateDiscount(Order order);
+    protected abstract Order calculateDiscount(Order order);
 
-    Order updateProductsAvailability(Order order);
+    protected abstract Order UpdateCustomerStatus(Order order);
 
-    void processOrder(Order order);
+    protected abstract Order updateProductsAvailability(Order order);
+
+    protected abstract Order processOrder(Order order);
+
+    public Order doShopping(Basket basket) {
+        Order order = createOrder(basket);
+        checkProductsAvailability(order);
+        if (order.getFlowResults().isEmpty()) {
+            calculateOrder(order);
+            calculateDiscount(order);
+            updateProductsAvailability(order);
+            processOrder(order);
+        }
+        return order;
+    }
 }

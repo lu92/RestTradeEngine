@@ -1,8 +1,13 @@
 package com.tradeengine.TradeEngineAdapter.model;
 
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.tradeengine.ProfileReader.entities.Address;
 import com.tradeengine.TradeEngine.dto.ProductInfo;
+import com.tradeengine.common.Message;
 import com.tradeengine.common.entities.Price;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,7 +16,9 @@ import lombok.experimental.Builder;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Data
 @Builder
@@ -19,12 +26,18 @@ import java.util.List;
 @AllArgsConstructor
 public class Order {
     private Long customerId;
+
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDateTime timeOfSale;
+
     private List<ProductInfo> productList;
     private Address address;
     private Long gainedPoints;
     private List<Discount> discountList;
+    private List<Error> flowResults;
     private Price price;
+    private Message.Status status;
 
     public List<ProductInfo> getProductList() {
         if (productList == null)
@@ -38,5 +51,17 @@ public class Order {
             discountList = new ArrayList<>();
 
         return discountList;
+    }
+
+    public List<Error> getFlowResults() {
+        if (flowResults == null) {
+            flowResults = new ArrayList<>();
+        }
+
+        return flowResults;
+    }
+
+    public void addError(Error ... errors) {
+        getFlowResults().addAll(Arrays.asList(errors));
     }
 }

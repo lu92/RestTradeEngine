@@ -17,7 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class ShoppingHistoryServiceImpl implements ShoppingHistoryService {
@@ -39,7 +41,10 @@ public class ShoppingHistoryServiceImpl implements ShoppingHistoryService {
 
     @Override
     public ShoppingHistoryDto getShoppingHistory(long customerId) {
-        List<ShoppingHistory> shoppingHistoryList = shoppingHistoryRepository.findByCustomerId(customerId);
+        List<ShoppingHistory> shoppingHistoryList = shoppingHistoryRepository.findAll().stream()
+                .filter(shoppingHistory -> shoppingHistory.getCustomerId().equals(new Long(customerId)))
+                .collect(Collectors.toList());
+
         switch (shoppingHistoryList.size()) {
             case 0:
                 return new ShoppingHistoryDto(new Message("Shopping history doesn't exist for selected customer!", Message.Status.FAILURE), null);
@@ -71,83 +76,43 @@ public class ShoppingHistoryServiceImpl implements ShoppingHistoryService {
         if (!customerRepository.exists(createCompletedOrderDto.getCustomerId())) {
             return new ShoppingHistoryDto(new Message("Customer doesn't exist", Message.Status.FAILURE), null);
         } else {
-            List<ShoppingHistory> shoppingHistoryList = shoppingHistoryRepository.findByCustomerId(createCompletedOrderDto.getCustomerId());
-            switch (shoppingHistoryList.size()) {
-                case 0:
-                    return new ShoppingHistoryDto(new Message("Shopping history doesn't exist for selected customer!", Message.Status.FAILURE), null);
+            Optional<ShoppingHistory> obtainedShoppingHistory =
+                    shoppingHistoryRepository.findAll().stream()
+                            .filter(shoppingHistory1 -> shoppingHistory1.getCustomerId() == createCompletedOrderDto.getCustomerId())
+                            .findFirst();
 
-                case 1:
-                    if (createCompletedOrderDto.getSoldProductsList().isEmpty()) {
-                        return new ShoppingHistoryDto(new Message("Delivered order doesn't contain any sold products!", Message.Status.FAILURE), null);
-                    } else {
-                        ShoppingHistory shoppingHistory = shoppingHistoryList.get(0);
-                        CompletedOrder completedOrder = shoppingHistoryMapper.mapCompletedOrder(createCompletedOrderDto);
-                        completedOrder.setSyntheticId(UUID.randomUUID().toString());
-                        // Order Validation
+            if (obtainedShoppingHistory.isPresent()) {
+                ShoppingHistory shoppingHistory = obtainedShoppingHistory.get();
 
-                        shoppingHistory.setSpendMoney(Price.builder()
-                                .amount(shoppingHistory.getSpendMoney().getAmount() + createCompletedOrderDto.getCost().getAmount())
-                                .tax(shoppingHistory.getSpendMoney().getTax() + createCompletedOrderDto.getCost().getTax())
-                                .build());
+                if (createCompletedOrderDto.getSoldProductsList().isEmpty()) {
+                    return new ShoppingHistoryDto(new Message("Delivered order doesn't contain any sold products!", Message.Status.FAILURE), null);
+                } else {
+                    CompletedOrder completedOrder = shoppingHistoryMapper.mapCompletedOrder(createCompletedOrderDto);
+                    completedOrder.setSyntheticId(UUID.randomUUID().toString());
+                    // Order Validation
 
-                        completedOrder.setShoppingHistory(shoppingHistory);
-                        CompletedOrder completedOrderDb = completedOrderRepository.save(completedOrder);
+                    shoppingHistory.setSpendMoney(Price.builder()
+                            .amount(shoppingHistory.getSpendMoney().getAmount() + createCompletedOrderDto.getCost().getAmount())
+                            .tax(shoppingHistory.getSpendMoney().getTax() + createCompletedOrderDto.getCost().getTax())
+                            .build());
 
-                        for (SoldProduct soldProduct : completedOrder.getSoldProductsList())
-                        {
-                            soldProduct.setCompletedOrder(completedOrder);
-                            soldProductRepository.save(soldProduct);
-                        }
+                    completedOrder.setShoppingHistory(shoppingHistory);
+                    CompletedOrder completedOrderDb = completedOrderRepository.save(completedOrder);
 
-
-                        shoppingHistory.getCompletedOrderList().add(completedOrderDb);
-                        ShoppingHistory savedShoppingHistory = shoppingHistoryRepository.save(shoppingHistory);
-                        ShoppingHistoryInfo savedShoppingHistoryInfo = shoppingHistoryMapper.mapShoppingHistory(savedShoppingHistory);
-                        return new ShoppingHistoryDto(new Message("Order has been added to shopping history!", Message.Status.SUCCESS), savedShoppingHistoryInfo);
+                    for (SoldProduct soldProduct : completedOrder.getSoldProductsList()) {
+                        soldProduct.setCompletedOrder(completedOrder);
+                        soldProductRepository.save(soldProduct);
                     }
 
-                default:
-                    return new ShoppingHistoryDto(new Message("There is more than one shopping history for customer!", Message.Status.FAILURE), null);
+
+                    shoppingHistory.getCompletedOrderList().add(completedOrderDb);
+                    ShoppingHistory savedShoppingHistory = shoppingHistoryRepository.save(shoppingHistory);
+                    ShoppingHistoryInfo savedShoppingHistoryInfo = shoppingHistoryMapper.mapShoppingHistory(savedShoppingHistory);
+                    return new ShoppingHistoryDto(new Message("Order has been added to shopping history!", Message.Status.SUCCESS), savedShoppingHistoryInfo);
+                }
+            } else {
+                return new ShoppingHistoryDto(new Message("Shopping history doesn't exist for selected customer!", Message.Status.FAILURE), null);
             }
         }
     }
-
-
-//    @Override
-//    public ShoppingHistoryDto addOrder(CreateCompletedOrderDto createCompletedOrderDto) {
-//        if (!customerRepository.exists(createCompletedOrderDto.getCustomerId())) {
-//            return new ShoppingHistoryDto(new Message("Customer doesn't exist", Message.Status.FAILURE), null);
-//        } else {
-//            List<ShoppingHistory> shoppingHistoryList = shoppingHistoryRepository.findByCustomerId(createCompletedOrderDto.getCustomerId());
-//            switch (shoppingHistoryList.size()) {
-//                case 0:
-//                    return new ShoppingHistoryDto(new Message("Shopping history doesn't exist for selected customer!", Message.Status.FAILURE), null);
-//
-//                case 1:
-//                    if (createCompletedOrderDto.getSoldProductsList().isEmpty()) {
-//                        return new ShoppingHistoryDto(new Message("Delivered order doesn't contain any sold products!", Message.Status.FAILURE), null);
-//                    } else {
-//                        ShoppingHistory shoppingHistory = shoppingHistoryList.get(0);
-//                        CompletedOrder completedOrder = shoppingHistoryMapper.mapCompletedOrder(createCompletedOrderDto);
-//                        completedOrder.setSyntheticId(UUID.randomUUID().toString());
-//                        // Order Validation
-//
-//                        shoppingHistory.setSpendMoney(Price.builder()
-//                                .amount(shoppingHistory.getSpendMoney().getAmount() + createCompletedOrderDto.getCost().getAmount())
-//                                .tax(shoppingHistory.getSpendMoney().getTax() + createCompletedOrderDto.getCost().getTax())
-//                                .build());
-//
-//                        CompletedOrder completedOrderDb = completedOrderRepository.save(completedOrder);
-//
-//                        shoppingHistory.getCompletedOrderList().add(completedOrderDb);
-//                        ShoppingHistory savedShoppingHistory = shoppingHistoryRepository.save(shoppingHistory);
-//                        ShoppingHistoryInfo savedShoppingHistoryInfo = shoppingHistoryMapper.mapShoppingHistory(savedShoppingHistory);
-//                        return new ShoppingHistoryDto(new Message("Order has been added to shopping history!", Message.Status.SUCCESS), savedShoppingHistoryInfo);
-//                    }
-//
-//                default:
-//                    return new ShoppingHistoryDto(new Message("There is more than one shopping history for customer!", Message.Status.FAILURE), null);
-//            }
-//        }
-//    }
 }

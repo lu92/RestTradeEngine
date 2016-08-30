@@ -7,8 +7,6 @@ import com.tradeengine.TradeEngineAdapter.services.layers.TradeEngineSupportLaye
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
-
 @Component
 public class TradeEngineRestService implements TradeEngineSupportLayer {
     private RestTemplate restTemplate = new RestTemplate();
@@ -43,10 +41,6 @@ public class TradeEngineRestService implements TradeEngineSupportLayer {
     @Override
     public ProductDto getProduct(long productId) {
         return restTemplate.getForObject(PRODUCT_BASE_URL + "/" + productId, ProductDto.class);
-    }
-
-    public ProductListDto getProductList(List<Long> productList) {
-        return restTemplate.postForObject(PRODUCT_BASE_URL + "/GetRequestedProducts", new RequestedProductsDto(productList), ProductListDto.class);
     }
 
     @Override

@@ -1,10 +1,14 @@
 package com.tradeengine.TradeEngineAdapter.services.downlines;
 
 import com.tradeengine.ShoppingHistory.dto.CreateCompletedOrderDto;
+import com.tradeengine.ShoppingHistory.dto.ShoppingHistoryDto;
 import com.tradeengine.ShoppingHistory.dto.SoldProductInfo;
 import com.tradeengine.TradeEngine.dto.ProductInfo;
 import com.tradeengine.TradeEngine.dto.ProductListDto;
+import com.tradeengine.TradeEngine.dto.RequestedProductsDto;
 import com.tradeengine.TradeEngineAdapter.model.Basket;
+import com.tradeengine.TradeEngineAdapter.model.Error;
+import com.tradeengine.TradeEngineAdapter.model.ErrorType;
 import com.tradeengine.TradeEngineAdapter.model.Order;
 import com.tradeengine.TradeEngineAdapter.services.layers.BasketSupportLayer;
 import com.tradeengine.common.entities.Price;
@@ -12,12 +16,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.tradeengine.common.Message.Status.FAILURE;
+import static com.tradeengine.common.Message.Status.*;
 
 @Component
-public class BasketRestService implements BasketSupportLayer {
+public class BasketRestService extends BasketSupportLayer {
 
     @Autowired
     private ShoppingHistoryRestService shoppingHistoryRestService;
@@ -25,64 +31,110 @@ public class BasketRestService implements BasketSupportLayer {
     @Autowired
     private TradeEngineRestService tradeEngineRestService;
 
-    @Override
-    public boolean checkProductsAvailability(Basket basket) {
-        ProductListDto requestedProducts = tradeEngineRestService.getProductList(
-                basket.getProductList().stream()
-                        .map(ProductInfo::getProductId)
-                        .collect(Collectors.toList()));
 
-        if (requestedProducts.getMessage().getStatus() == FAILURE ||
-                requestedProducts.getProductList().size() < basket.getProductList().size()) {
-            return false;
-        }
+    protected Order createOrder(Basket basket) {
 
-//        return requestedProducts.getProductList().stream()
-//                .allMatch(productInfo ->                    // sprawdz czy zamowienie nie przekraca dostepnosci produktu
-//                        productInfo.isAvailable() && basket.getProductList(). productInfo.getQuantity());
-        return false;
-    }
-
-    @Override
-    public Order calculateOrder(Basket basket) {
-
-        Price price = new Price(0, 0, 0, basket.getTargetCurrency());
-        basket.getProductList().stream().forEach(productInfo ->
-        {
-            price.addAmount(productInfo.getQuantity() * productInfo.getPrice().getAmount());
-            price.addTax(productInfo.getQuantity() * productInfo.getPrice().getTax());
-        });
-
-
-        return Order.builder()
+        Order order = Order.builder()
                 .customerId(basket.getCustomerId())
-                .timeOfSale(basket.getTimeOfSale())
+                .timeOfSale(LocalDateTime.now())
                 .productList(basket.getProductList())
                 .address(basket.getAddress())
-                .price(price)
+                .price(new Price(0, 0, 0, "PLN"))
                 .build();
+
+        if (order.getCustomerId() == null) {
+            order.getFlowResults().add(new Error(null, "", "Missing customer id!", ErrorType.MISSING_CUSTOMER_ID));
+        }
+
+        if (order.getAddress() == null) {
+            order.getFlowResults().add(new Error(null, "", "Missing address!", ErrorType.MISSING_ADDRESS));
+        }
+
+        return order;
     }
 
-    @Override
-    public Order calculatePoints(Order order) {
+    protected Order checkProductsAvailability(Order order) {
+
+        List<Error> collectedErrors = new ArrayList<>();
+
+        if (order.getProductList().isEmpty()) {
+            order.setProductList(new ArrayList<>());
+            order.addError(new Error(null, "", "Basket is Empty!", ErrorType.EMPTY_BASKET));
+            order.setGainedPoints(0L);
+            order.setDiscountList(new ArrayList<>());
+            order.setStatus(FAILURE);
+            return order;
+        }
+
+        ProductListDto requestedProducts = tradeEngineRestService.getProductList(
+                new RequestedProductsDto(order.getProductList().stream()
+                        .map(ProductInfo::getProductId)
+                        .collect(Collectors.toList())));
+
+
+        if (requestedProducts.getMessage().getStatus() == FAILURE) {
+            List<Error> missingProducts = order.getProductList().stream()
+                    .map(productInfo -> new Error(productInfo.getProductId(), productInfo.getCommercialName(), "", ErrorType.PRODUCT_IS_NOT_AVAILABLE))
+                    .collect(Collectors.toList());
+
+            collectedErrors.addAll(missingProducts);
+        }
+
+        if (requestedProducts.getMessage().getStatus() == PARTIAL_SUCCESS) {
+
+
+            List<ProductInfo> missingProducts = order.getProductList().stream()
+                    .filter(productInfo -> !requestedProducts.getProduct(productInfo.getProductId()).isPresent())
+                    .collect(Collectors.toList());
+
+            List<Error> productsWhichDoesNotOccur = missingProducts.stream()
+                    .map(productInfo -> new Error(productInfo.getProductId(), productInfo.getCommercialName(), "", ErrorType.PRODUCT_IS_NOT_AVAILABLE))
+                    .collect(Collectors.toList());
+
+            List<Error> productsWhichAreNotEnough = order.getProductList().stream()
+                    .filter(product -> !missingProducts.contains(product) && product.getQuantity() > requestedProducts.getProduct(product.getProductId()).get().getQuantity())
+                    .map(productInfo -> new Error(productInfo.getProductId(), productInfo.getCommercialName(), "", ErrorType.NOT_ENOUGH_AMOUNT_OF_PRODUCT))
+                    .collect(Collectors.toList());
+
+            collectedErrors.addAll(productsWhichDoesNotOccur);
+            collectedErrors.addAll(productsWhichAreNotEnough);
+        }
+
+        order.getFlowResults().addAll(collectedErrors);
+        order.setGainedPoints(0L);
+        order.setDiscountList(new ArrayList<>());
+        order.setStatus(FAILURE);
+
+        return order;
+    }
+
+
+    protected Order calculateOrder(Order order) {
+        order.getProductList().stream().forEach(productInfo ->
+        {
+            order.getPrice().addAmount(productInfo.getQuantity() * productInfo.getPrice().getAmount());
+            order.getPrice().addTax(productInfo.getQuantity() * productInfo.getPrice().getTax());
+        });
+        return order;
+    }
+
+    protected Order calculateDiscount(Order order) {
         // Will be implemented in future
         return order;
     }
 
-    @Override
-    public Order calculateDiscount(Order order) {
+    protected Order UpdateCustomerStatus(Order order) {
+
+        // zmienia ilosc pieniedzy i  tierlevel Customer'a
+        return order;
+    }
+
+    protected Order updateProductsAvailability(Order order) {
         // Will be implemented in future
         return order;
     }
 
-    @Override
-    public Order updateProductsAvailability(Order order) {
-        // Will be implemented in future
-        return null;
-    }
-
-    @Override
-    public void processOrder(Order order) {
+    protected Order processOrder(Order order) {
 //        CustomerDto customer = profileReaderRestService.getCustomer(order.getCustomerId());
 
         CreateCompletedOrderDto createCompletedOrderDto = new CreateCompletedOrderDto(
@@ -99,10 +151,16 @@ public class BasketRestService implements BasketSupportLayer {
                 order.getGainedPoints(),
                 order.getPrice());
 
-        shoppingHistoryRestService.addOrder(createCompletedOrderDto);
+        ShoppingHistoryDto shoppingHistoryDto = shoppingHistoryRestService.addOrder(createCompletedOrderDto);
+        if (shoppingHistoryDto.getMessage().getStatus() == FAILURE) {
+            order.setStatus(FAILURE);
+        }
+
+        if (order.getFlowResults().isEmpty())
+            order.setStatus(SUCCESS);
+        else
+            order.setStatus(FAILURE);
+
+        return order;
     }
-    // procesowanie całego koszyka
-    // sumowanie cen
-    // naliczanie znizek (later)
-    // zapisywanie zmian w bazie
 }

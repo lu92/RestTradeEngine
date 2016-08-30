@@ -4,11 +4,13 @@ import com.tradeengine.ProfileReader.CreateCustomerDto;
 import com.tradeengine.ProfileReader.CustomerDto;
 import com.tradeengine.ProfileReader.CustomerDtoList;
 import com.tradeengine.ProfileReader.LoginDto;
-import com.tradeengine.ProfileReader.entities.Customer;
+import com.tradeengine.ProfileReader.dto.CustomerInfo;
 import com.tradeengine.TradeEngine.dto.CategoryDto;
 import com.tradeengine.TradeEngine.dto.CategoryListDto;
 import com.tradeengine.TradeEngine.dto.CreateCategoryDto;
 import com.tradeengine.TradeEngine.dto.ProductSchemeDto;
+import com.tradeengine.TradeEngineAdapter.model.Basket;
+import com.tradeengine.TradeEngineAdapter.model.Order;
 import com.tradeengine.TradeEngineAdapter.model.dto.CustomerDTO;
 import com.tradeengine.TradeEngineAdapter.services.adapter.TradeEngineAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +60,7 @@ public class TradeEngineAdapterController
 
     @RequestMapping(value = "/ProfileReader", method = RequestMethod.PUT)
     @ResponseBody
-    public CustomerDto updateCustomer(@RequestBody Customer customer)
+    public CustomerDto updateCustomer(@RequestBody CustomerInfo customer)
     {
         return tradeEngineAdapter.updateCustomer(customer);
     }
@@ -100,5 +102,11 @@ public class TradeEngineAdapterController
     @ResponseBody
     public ProductSchemeDto getProductSchemeForCategory(@PathVariable(value = "categoryId") long id) {
         return tradeEngineAdapter.getProductSchemeForCategory(id);
+    }
+
+    @RequestMapping(value = "/Shopping", method = RequestMethod.POST)
+    @ResponseBody
+    public Order doShopping(@RequestBody Basket basket) {
+        return tradeEngineAdapter.doShopping(basket);
     }
 }

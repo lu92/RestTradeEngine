@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Data
 @NoArgsConstructor
@@ -25,5 +26,11 @@ public class ProductListDto {
             productList = new ArrayList<>();
 
         return productList;
+    }
+
+    public Optional<ProductInfo> getProduct(Long productId) {
+        return getProductList().stream()
+                .filter(productInfo -> productInfo.getProductId().equals(productId))
+                .findFirst();
     }
 }

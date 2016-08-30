@@ -4,6 +4,7 @@ import com.tradeengine.ProfileReader.repositories.CustomerRepository;
 import com.tradeengine.ShoppingHistory.ShoppingHistoryIntegrationContext;
 import com.tradeengine.ShoppingHistory.dto.CreateCompletedOrderDto;
 import com.tradeengine.ShoppingHistory.dto.ShoppingHistoryDto;
+import com.tradeengine.ShoppingHistory.entities.ShoppingHistory;
 import com.tradeengine.ShoppingHistory.mapper.ShoppingHistoryMapper;
 import com.tradeengine.ShoppingHistory.repositories.CompletedOrderRepository;
 import com.tradeengine.ShoppingHistory.repositories.ShoppingHistoryRepository;
@@ -18,6 +19,8 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import static com.tradeengine.ShoppingHistoryTestData.*;
 import static com.tradeengine.common.Message.Status.FAILURE;
@@ -65,28 +68,30 @@ public class ShoppingHistoryServiceImplTest {
     @Test
     @Transactional
     public void testCreateAndGetShoppingHistory() {
+        final long CUSTOMER_ID = 100;
         Mockito.when(customerRepository.exists(Mockito.anyLong())).thenReturn(true);
 
-        ShoppingHistoryDto shoppingHistoryDto_CREATE = shoppingHistoryService.createShoppingHistory(1);
+        ShoppingHistoryDto shoppingHistoryDto_CREATE = shoppingHistoryService.createShoppingHistory(CUSTOMER_ID);
         assertThat(shoppingHistoryDto_CREATE.getMessage().getStatus()).isEqualTo(SUCCESS);
         assertThat(shoppingHistoryDto_CREATE.getMessage().getMessage()).isEqualTo("Shopping history has been created!");
         assertThat(shoppingHistoryDto_CREATE.getShoppingHistory()).isNotNull();
 
-        assertThat(shoppingHistoryRepository.count()).isEqualTo(1L);
+        List<ShoppingHistory> all = shoppingHistoryRepository.findAll();
+        assertThat(all.size()).isEqualTo(1);
 
-        ShoppingHistoryDto shoppingHistoryDto_GET = shoppingHistoryService.getShoppingHistory(shoppingHistoryDto_CREATE.getShoppingHistory().getShoppingHistoryId());
+        ShoppingHistoryDto shoppingHistoryDto_GET = shoppingHistoryService.getShoppingHistory(shoppingHistoryDto_CREATE.getShoppingHistory().getCustomerId());
         assertThat(shoppingHistoryDto_GET.getMessage().getMessage()).isEqualTo("Shopping history has been delivered!");
         assertThat(shoppingHistoryDto_GET.getMessage().getStatus()).isEqualTo(SUCCESS);
-        assertThat(shoppingHistoryDto_GET.getShoppingHistory().getCustomerId()).isEqualTo(1L);
+        assertThat(shoppingHistoryDto_GET.getShoppingHistory().getCustomerId()).isEqualTo(CUSTOMER_ID);
         assertThat(shoppingHistoryDto_GET.getShoppingHistory().getSpendMoney()).isEqualTo(Price.builder().amount(0).tax(0).price(0).build());
         assertThat(shoppingHistoryDto_GET.getShoppingHistory().getCompletedOrderList()).isEmpty();
-        assertThat(shoppingHistoryDto_GET.getShoppingHistory().getShoppingHistoryId()).isEqualTo(shoppingHistoryDto_CREATE.getShoppingHistory().getCustomerId());
+        assertThat(shoppingHistoryDto_GET.getShoppingHistory().getShoppingHistoryId()).isEqualTo(shoppingHistoryDto_CREATE.getShoppingHistory().getShoppingHistoryId());
     }
 
     @Test
     @Transactional
     public void testGetShoppingHistoryWhenDoesntExistExpectFailure() {
-        final int FAKE_CUSTOMER_ID = -1;
+        final long FAKE_CUSTOMER_ID = -1;
         ShoppingHistoryDto shoppingHistoryDto_GET = shoppingHistoryService.getShoppingHistory(FAKE_CUSTOMER_ID);
         assertThat(shoppingHistoryDto_GET.getMessage().getStatus()).isEqualTo(FAILURE);
         assertThat(shoppingHistoryDto_GET.getMessage().getMessage()).isEqualTo("Shopping history doesn't exist for selected customer!");
@@ -97,7 +102,7 @@ public class ShoppingHistoryServiceImplTest {
     @Test
     @Transactional
     public void testTryToCreateTwoShoppingHistoryRelatedWithSameCustomerExpectFailure() {
-        final int CUSTOMER_ID = 100;
+        final long CUSTOMER_ID = 100;
 
         ShoppingHistoryDto shoppingHistoryDto_CREATE = shoppingHistoryService.createShoppingHistory(CUSTOMER_ID);
         assertThat(shoppingHistoryDto_CREATE.getMessage().getStatus()).isEqualTo(SUCCESS);
@@ -117,7 +122,11 @@ public class ShoppingHistoryServiceImplTest {
     @Test
     @Transactional
     public void testAddOrderWhenCustomerDoesNotExistExpectFailure() {
+        final long CUSTOMER_ID = 100;
+        Mockito.when(customerRepository.exists(Mockito.anyLong())).thenReturn(false);
+
         CreateCompletedOrderDto createCompletedOrderDto = new CreateCompletedOrderDto();
+        createCompletedOrderDto.setCustomerId(CUSTOMER_ID);
         ShoppingHistoryDto shoppingHistoryDto = shoppingHistoryService.addOrder(createCompletedOrderDto);
         assertThat(shoppingHistoryDto.getMessage().getStatus()).isEqualTo(FAILURE);
         assertThat(shoppingHistoryDto.getMessage().getMessage()).isEqualTo("Customer doesn't exist");
@@ -127,7 +136,7 @@ public class ShoppingHistoryServiceImplTest {
     @Test
     @Transactional
     public void testAddEmptyOrderExpectFailure() {
-        final int CUSTOMER_ID = 100;
+        final long CUSTOMER_ID = 100;
 
         Mockito.when(customerRepository.exists(Mockito.anyLong())).thenReturn(true);
 
@@ -139,10 +148,11 @@ public class ShoppingHistoryServiceImplTest {
         assertThat(shoppingHistoryRepository.count()).isEqualTo(1L);
 
         CreateCompletedOrderDto createCompletedOrderDto = new CreateCompletedOrderDto();
+        createCompletedOrderDto.setCustomerId(CUSTOMER_ID);
 
         ShoppingHistoryDto shoppingHistoryDto = shoppingHistoryService.addOrder(createCompletedOrderDto);
         assertThat(shoppingHistoryDto.getMessage().getStatus()).isEqualTo(FAILURE);
-        assertThat(shoppingHistoryDto.getMessage().getMessage()).isEqualTo("Delivered order doesn't contain any product's id!");
+        assertThat(shoppingHistoryDto.getMessage().getMessage()).isEqualTo("Delivered order doesn't contain any sold products!");
         assertThat(shoppingHistoryDto.getShoppingHistory()).isNull();
     }
 

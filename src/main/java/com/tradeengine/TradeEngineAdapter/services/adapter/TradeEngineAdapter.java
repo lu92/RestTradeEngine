@@ -3,7 +3,7 @@ package com.tradeengine.TradeEngineAdapter.services.adapter;
 import com.tradeengine.ProfileReader.CreateCustomerDto;
 import com.tradeengine.ProfileReader.CustomerDto;
 import com.tradeengine.ProfileReader.CustomerDtoList;
-import com.tradeengine.ProfileReader.entities.Customer;
+import com.tradeengine.ProfileReader.dto.CustomerInfo;
 import com.tradeengine.TradeEngine.dto.*;
 import com.tradeengine.TradeEngine.dto.productCriteria.ProductCriteria;
 import com.tradeengine.TradeEngine.entities.Product;
@@ -14,7 +14,6 @@ import com.tradeengine.TradeEngineAdapter.services.downlines.BasketRestService;
 import com.tradeengine.TradeEngineAdapter.services.downlines.ProfileReaderRestService;
 import com.tradeengine.TradeEngineAdapter.services.downlines.ShoppingHistoryRestService;
 import com.tradeengine.TradeEngineAdapter.services.downlines.TradeEngineRestService;
-import com.tradeengine.TradeEngineAdapter.services.layers.BasketSupportLayer;
 import com.tradeengine.TradeEngineAdapter.services.layers.CustomerSupportLayer;
 import com.tradeengine.TradeEngineAdapter.services.layers.TradeEngineSupportLayer;
 import com.tradeengine.common.Message;
@@ -22,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class TradeEngineAdapter implements Adapter, BasketSupportLayer, CustomerSupportLayer, TradeEngineSupportLayer {
+public class TradeEngineAdapter implements Adapter, CustomerSupportLayer, TradeEngineSupportLayer {
 
     @Autowired
     private BasketRestService basketRestService;
@@ -60,28 +59,13 @@ public class TradeEngineAdapter implements Adapter, BasketSupportLayer, Customer
     }
 
     @Override
-    public CustomerDto updateCustomer(com.tradeengine.ProfileReader.entities.Customer customer) {
-        return profileReaderRestService.updateCustomer(customer);
+    public CustomerDto updateCustomer(CustomerInfo customerInfo) {
+        return profileReaderRestService.updateCustomer(customerInfo);
     }
 
     @Override
     public CustomerDto login(String username, String password) {
         return null;
-    }
-
-//    @Override
-//    public CustomerDTO getCustomerWithShoppingHistory(long customerId)
-//    {
-//        return customerRestService.getCustomerWithShoppingHistory(customerId);
-//    }
-
-    public void processOrder(Basket basket) {
-        CustomerDto customerDto = profileReaderRestService.getCustomer(basket.getCustomerId());
-        if (customerDto.getMessage().getStatus() == Message.Status.SUCCESS) {
-            Order order = basketRestService.calculateOrder(basket);
-            Customer customer = customerDto.getCustomer();
-
-        }
     }
 
     @Override
@@ -125,38 +109,8 @@ public class TradeEngineAdapter implements Adapter, BasketSupportLayer, Customer
     }
 
     @Override
-    public void addShoppingHistory(long customerId, Object o) {
-
-    }
-
-    @Override
-    public boolean checkProductsAvailability(Basket basket) {
-        return false;
-    }
-
-    @Override
-    public Order calculateOrder(Basket basket) {
-        return basketRestService.calculateOrder(basket);
-    }
-
-    @Override
-    public Order calculatePoints(Order order) {
-        return null;
-    }
-
-    @Override
-    public Order calculateDiscount(Order order) {
-        return null;
-    }
-
-    @Override
-    public Order updateProductsAvailability(Order order) {
-        return null;
-    }
-
-    @Override
-    public void processOrder(Order order) {
-
+    public Order doShopping(Basket basket) {
+        return basketRestService.doShopping(basket);
     }
 
     @Override
@@ -189,11 +143,6 @@ public class TradeEngineAdapter implements Adapter, BasketSupportLayer, Customer
         return tradeEngineRestService.getProductList(requestedProductsDto);
     }
 
-//    @Override
-//    public ProductListDto getProductList(List<Long> productIdList) {
-//        return null;
-//    }
-
     @Override
     public ProductListDto getAllProductsForCategory(String categoryName) {
         return tradeEngineRestService.getAllProductsForCategory(categoryName);
@@ -223,20 +172,4 @@ public class TradeEngineAdapter implements Adapter, BasketSupportLayer, Customer
     public ProductListDto findProducts(ProductCriteria productCriteria) {
         return tradeEngineRestService.findProducts(productCriteria);
     }
-
-//    private CustomerDTO createFullInfoAboutCustomer(CustomerDto pr_customer, ShoppingHistoryDto sh_shopping_history) {
-//        // sprawdzic czy customer ma historie
-//
-//        CustomerShoppingHistoryInfoBuilder customerShoppingHistoryInfoBuilder =
-//                new CustomerShoppingHistoryInfoBuilder();
-//
-//        com.tradeengine.TradeEngineAdapter.model.Customer customer = customerShoppingHistoryInfoBuilder
-////                .customer(pr_customer)
-////                .shoppingHistory(sh_shopping_history)
-//                .params(pr_customer, sh_shopping_history)
-//                .build();
-//
-//        CustomerDTO customerDTO = new CustomerDTO(new Message("Customer with his shopping history has been delivered!", Message.Status.SUCCESS), customer);
-//        return customerDTO;
-//    }
 }
