@@ -4,9 +4,10 @@ import com.tradeengine.MyMatchers;
 import com.tradeengine.ProfileReader.CustomerDto;
 import com.tradeengine.ProfileReader.CustomerDtoList;
 import com.tradeengine.ProfileReader.ProfileReaderIntegrationContext;
+import com.tradeengine.ProfileReader.entities.TierLevel;
+import com.tradeengine.ProfileReader.mapper.ProfileReaderMapper;
 import com.tradeengine.ProfileReader.entities.Customer;
 import com.tradeengine.ProfileReader.repositories.CustomerRepository;
-import com.tradeengine.ProfileReaderTestData;
 import com.tradeengine.common.Message;
 import org.junit.Assert;
 import org.junit.Test;
@@ -34,6 +35,9 @@ public class ProfileReaderServiceImplTest
     @Autowired
     private CustomerRepository customerRepository;
 
+    @Autowired
+    private ProfileReaderMapper profileReaderMapper;
+
     @Test
     @Transactional
     public void testCreateAndGetCustomer()
@@ -49,7 +53,7 @@ public class ProfileReaderServiceImplTest
         CustomerDto customerDto_GET = profileReaderService.getCustomer(customerDto_CREATE.getCustomer().getCustomerId());
         assertThat(customerDto_GET.getMessage().getMessage()).isEqualTo("customer has been delivered!");
         assertThat(customerDto_GET.getMessage().getStatus()).isEqualTo(Message.Status.SUCCESS);
-        Assert.assertThat(customerDto_GET.getCustomer(), MyMatchers.sameAs(CUSTOMER));
+        Assert.assertThat(profileReaderMapper.mapCustomer(customerDto_GET.getCustomer()), MyMatchers.sameAs(CUSTOMER));
     }
 
     @Test
@@ -96,8 +100,8 @@ public class ProfileReaderServiceImplTest
         CustomerDtoList customerDtoList_GET = profileReaderService.getCustomerList();
         assertThat(customerDtoList_GET.getMessage().getMessage()).isEqualTo("Customer's list is filled");
         assertThat(customerDto_CREATE_2time.getMessage().getStatus()).isEqualTo(Message.Status.SUCCESS);
-        Assert.assertThat(customerDtoList_GET.getCustomerList().get(0), MyMatchers.sameAs(CUSTOMER));
-        Assert.assertThat(customerDtoList_GET.getCustomerList().get(1), MyMatchers.sameAs(CUSTOMER_2));
+        Assert.assertThat(profileReaderMapper.mapCustomer(customerDtoList_GET.getCustomerList().get(0)), MyMatchers.sameAs(CUSTOMER));
+        Assert.assertThat(profileReaderMapper.mapCustomer(customerDtoList_GET.getCustomerList().get(1)), MyMatchers.sameAs(CUSTOMER_2));
     }
 
     @Test
@@ -164,13 +168,17 @@ public class ProfileReaderServiceImplTest
         CUSTOMER_COPY.setCustomerId(customerDto.getCustomer().getCustomerId());
         CUSTOMER_COPY.setFirstname(CUSTOMER_FIRSTNAME_2);
         CUSTOMER_COPY.setLastname(CUSTOMER_LASTNAME_2);
-        CustomerDto customerDto_UPDATE = profileReaderService.updateCustomer(CUSTOMER_COPY);
+        CUSTOMER_COPY.setPoints(1000L);
+        CUSTOMER_COPY.setTierLevel(TierLevel.GOLD);
+        CustomerDto customerDto_UPDATE = profileReaderService.updateCustomer(profileReaderMapper.mapCustomer(CUSTOMER_COPY));
 
         assertThat(customerDto_UPDATE.getMessage().getMessage()).isEqualTo("customer has been updated!");
         assertThat(customerDto_UPDATE.getMessage().getStatus()).isEqualTo(Message.Status.SUCCESS);
         assertThat(customerDto_UPDATE.getCustomer()).isNotNull();
         assertThat(customerDto_UPDATE.getCustomer().getFirstname()).isEqualTo(CUSTOMER_FIRSTNAME_2);
         assertThat(customerDto_UPDATE.getCustomer().getLastname()).isEqualTo(CUSTOMER_LASTNAME_2);
+        assertThat(customerDto_UPDATE.getCustomer().getPoints()).isEqualTo(1000L);
+        assertThat(customerDto_UPDATE.getCustomer().getTierLevel()).isEqualTo(TierLevel.GOLD);
 
         assertThat(customerRepository.count()).isEqualTo(1L);
     }
@@ -180,7 +188,7 @@ public class ProfileReaderServiceImplTest
     public void testUpdateWhenCustomerDoesNotExistExpectFailure()
     {
         CUSTOMER.setCustomerId(1L);
-        CustomerDto customerDto_UPDATE = profileReaderService.updateCustomer(CUSTOMER);
+        CustomerDto customerDto_UPDATE = profileReaderService.updateCustomer(profileReaderMapper.mapCustomer(CUSTOMER));
 
         assertThat(customerDto_UPDATE.getMessage().getMessage()).isEqualTo("can't update because of customer doesn't exist!");
         assertThat(customerDto_UPDATE.getMessage().getStatus()).isEqualTo(Message.Status.FAILURE);
@@ -194,7 +202,7 @@ public class ProfileReaderServiceImplTest
     public void testUpdateWhenCustomerIdIsEmptyExpectFailure()
     {
         CUSTOMER.setCustomerId(null);
-        CustomerDto customerDto_UPDATE = profileReaderService.updateCustomer(CUSTOMER);
+        CustomerDto customerDto_UPDATE = profileReaderService.updateCustomer(profileReaderMapper.mapCustomer(CUSTOMER));
 
         assertThat(customerDto_UPDATE.getMessage().getMessage()).isEqualTo("customerId is demanded!");
         assertThat(customerDto_UPDATE.getMessage().getStatus()).isEqualTo(Message.Status.FAILURE);

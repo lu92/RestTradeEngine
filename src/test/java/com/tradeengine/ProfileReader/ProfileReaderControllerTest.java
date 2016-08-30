@@ -1,5 +1,6 @@
 package com.tradeengine.ProfileReader;
 
+import com.tradeengine.ProfileReader.mapper.ProfileReaderMapper;
 import com.tradeengine.ProfileReader.services.ProfileReaderService;
 import com.tradeengine.TestUtils;
 import com.tradeengine.common.Message;
@@ -21,26 +22,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
-import static com.tradeengine.ProfileReaderTestData.CREATE_CUSTOMER_DTO;
-import static com.tradeengine.ProfileReaderTestData.CUSTOMER;
-import static com.tradeengine.ProfileReaderTestData.CUSTOMER_2;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isEmptyOrNullString;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static com.tradeengine.ProfileReaderTestData.*;
+import static org.hamcrest.Matchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = { TestContext.class })
+@SpringApplicationConfiguration(classes = {TestContext.class})
 @WebAppConfiguration
-public class ProfileReaderControllerTest
-{
+public class ProfileReaderControllerTest {
     Logger logger = Logger.getLogger(this.getClass().getName());
 
     @Autowired
@@ -49,19 +39,20 @@ public class ProfileReaderControllerTest
     @Autowired
     private ProfileReaderService profileReaderServiceMock;
 
+    @Autowired
+    private ProfileReaderMapper profileReaderMapper;
+
     private MockMvc mockMvc;
 
     @Before
-    public void setUp()
-    {
+    public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webCtx).build();
     }
 
     @Test
-    public void testGetCustomerWhenExist() throws Exception
-    {
+    public void testGetCustomerWhenExist() throws Exception {
         CUSTOMER.setCustomerId(1L);
-        final CustomerDto CUSTOMER_DTO = new CustomerDto(new Message("customer has been delivered!", Message.Status.SUCCESS), CUSTOMER);
+        final CustomerDto CUSTOMER_DTO = new CustomerDto(new Message("customer has been delivered!", Message.Status.SUCCESS), profileReaderMapper.mapCustomer(CUSTOMER));
         Mockito.when(profileReaderServiceMock.getCustomer(Mockito.any(Long.class))).thenReturn(CUSTOMER_DTO);
 
         String RSAsString = mockMvc.perform(get("/ProfileReader/1"))
@@ -90,8 +81,7 @@ public class ProfileReaderControllerTest
     }
 
     @Test
-    public void testGetCustomerWhenDoesNotExist() throws Exception
-    {
+    public void testGetCustomerWhenDoesNotExist() throws Exception {
         final CustomerDto CUSTOMER_DTO = new CustomerDto(new Message("customer doesn't exist!", Message.Status.FAILURE), null);
         Mockito.when(profileReaderServiceMock.getCustomer(Mockito.any(Long.class))).thenReturn(CUSTOMER_DTO);
 
@@ -107,8 +97,7 @@ public class ProfileReaderControllerTest
     }
 
     @Test
-    public void testGetCustomerListWhenEmpty() throws Exception
-    {
+    public void testGetCustomerListWhenEmpty() throws Exception {
         final CustomerDtoList emptyCustomerDtoList = new CustomerDtoList(new Message("Customer's list is empty", Message.Status.SUCCESS), new ArrayList<>());
         Mockito.when(profileReaderServiceMock.getCustomerList()).thenReturn(emptyCustomerDtoList);
 
@@ -121,9 +110,9 @@ public class ProfileReaderControllerTest
     }
 
     @Test
-    public void testGetCustomerListWhenFilled() throws Exception
-    {
-        final CustomerDtoList customerDtoList = new CustomerDtoList(new Message("Customer's list is filled", Message.Status.SUCCESS), Arrays.asList(CUSTOMER, CUSTOMER_2));
+    public void testGetCustomerListWhenFilled() throws Exception {
+        final CustomerDtoList customerDtoList = new CustomerDtoList(new Message("Customer's list is filled", Message.Status.SUCCESS),
+                Arrays.asList(profileReaderMapper.mapCustomer(CUSTOMER), profileReaderMapper.mapCustomer(CUSTOMER_2)));
         Mockito.when(profileReaderServiceMock.getCustomerList()).thenReturn(customerDtoList);
 
         String RS = mockMvc.perform(get("/ProfileReader"))
@@ -162,9 +151,8 @@ public class ProfileReaderControllerTest
     }
 
     @Test
-    public void testCreateCustomerExpectSuccess() throws Exception
-    {
-        final CustomerDto CUSTOMER_DTO = new CustomerDto(new Message("customer has been added!", Message.Status.SUCCESS), CUSTOMER);
+    public void testCreateCustomerExpectSuccess() throws Exception {
+        final CustomerDto CUSTOMER_DTO = new CustomerDto(new Message("customer has been added!", Message.Status.SUCCESS), profileReaderMapper.mapCustomer(CUSTOMER));
         Mockito.when(profileReaderServiceMock.createCustomer(CREATE_CUSTOMER_DTO)).thenReturn(CUSTOMER_DTO);
 
         String RQ = TestUtils.convertObjectToJsonText(CREATE_CUSTOMER_DTO);
@@ -195,8 +183,7 @@ public class ProfileReaderControllerTest
     }
 
     @Test
-    public void testCreateCustomerExpectFailure() throws Exception
-    {
+    public void testCreateCustomerExpectFailure() throws Exception {
         final CustomerDto CUSTOMER_DTO = new CustomerDto(new Message("customer already exists!", Message.Status.FAILURE), null);
         Mockito.when(profileReaderServiceMock.createCustomer(CREATE_CUSTOMER_DTO)).thenReturn(CUSTOMER_DTO);
 
@@ -217,8 +204,7 @@ public class ProfileReaderControllerTest
     }
 
     @Test
-    public void testDeleteCustomerExpectSuccess() throws Exception
-    {
+    public void testDeleteCustomerExpectSuccess() throws Exception {
         final CustomerDto CUSTOMER_DTO = new CustomerDto(new Message("customer has been deleted!", Message.Status.SUCCESS), null);
         Mockito.when(profileReaderServiceMock.deleteCustomer(Matchers.anyLong())).thenReturn(CUSTOMER_DTO);
 
@@ -235,8 +221,7 @@ public class ProfileReaderControllerTest
     }
 
     @Test
-    public void testDeleteCustomerExpectFailure() throws Exception
-    {
+    public void testDeleteCustomerExpectFailure() throws Exception {
         final CustomerDto CUSTOMER_DTO = new CustomerDto(new Message("customer doesn't exist!", Message.Status.FAILURE), null);
         Mockito.when(profileReaderServiceMock.deleteCustomer(Matchers.anyLong())).thenReturn(CUSTOMER_DTO);
 
@@ -253,14 +238,16 @@ public class ProfileReaderControllerTest
     }
 
     @Test
-    public void testUpdateCustomerExpectSuccess() throws Exception
-    {
-        final CustomerDto CUSTOMER_DTO = new CustomerDto(new Message("customer has been updated!", Message.Status.SUCCESS), CUSTOMER_2);
-        Mockito.when(profileReaderServiceMock.updateCustomer(CUSTOMER)).thenReturn(CUSTOMER_DTO);
+    public void testUpdateCustomerExpectSuccess() throws Exception {
+        final CustomerDto CUSTOMER_DTO = new CustomerDto(new Message("customer has been updated!", Message.Status.SUCCESS), profileReaderMapper.mapCustomer(CUSTOMER_2));
+        Mockito.when(profileReaderServiceMock.updateCustomer(profileReaderMapper.mapCustomer(CUSTOMER))).thenReturn(CUSTOMER_DTO);
+
+        String RQ = TestUtils.convertObjectToJsonText(profileReaderMapper.mapCustomer(CUSTOMER));
+        logger.info("RQ = " + RQ);
 
         String RS = mockMvc.perform(put("/ProfileReader")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(TestUtils.convertObjectToJsonText(CUSTOMER)))
+                .content(TestUtils.convertObjectToJsonText(profileReaderMapper.mapCustomer(CUSTOMER))))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.message.message", equalTo(CUSTOMER_DTO.getMessage().getMessage())))
@@ -283,10 +270,9 @@ public class ProfileReaderControllerTest
     }
 
     @Test
-    public void testUpdateCustomerExpectFailure() throws Exception
-    {
+    public void testUpdateCustomerExpectFailure() throws Exception {
         final CustomerDto CUSTOMER_DTO = new CustomerDto(new Message("can't update because of customer doesn't exist!", Message.Status.FAILURE), null);
-        Mockito.when(profileReaderServiceMock.updateCustomer(CUSTOMER)).thenReturn(CUSTOMER_DTO);
+        Mockito.when(profileReaderServiceMock.updateCustomer(profileReaderMapper.mapCustomer(CUSTOMER))).thenReturn(CUSTOMER_DTO);
 
         String RS = mockMvc.perform(put("/ProfileReader")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
@@ -302,10 +288,9 @@ public class ProfileReaderControllerTest
     }
 
     @Test
-    public void testUpdateCustomerExpectFailureBecauseOfMissingCustomerId() throws Exception
-    {
+    public void testUpdateCustomerExpectFailureBecauseOfMissingCustomerId() throws Exception {
         final CustomerDto CUSTOMER_DTO = new CustomerDto(new Message("customerId is demanded!", Message.Status.FAILURE), null);
-        Mockito.when(profileReaderServiceMock.updateCustomer(CUSTOMER)).thenReturn(CUSTOMER_DTO);
+        Mockito.when(profileReaderServiceMock.updateCustomer(profileReaderMapper.mapCustomer(CUSTOMER))).thenReturn(CUSTOMER_DTO);
 
         String RQ = TestUtils.convertObjectToJsonText(CUSTOMER);
 
@@ -325,13 +310,12 @@ public class ProfileReaderControllerTest
     }
 
     @Test
-    public void testLoginCustomerWhenExistExpectSuccess() throws Exception
-    {
+    public void testLoginCustomerWhenExistExpectSuccess() throws Exception {
         String username = "USERNAME";
         String password = "PASSWORD";
         final LoginDto loginDto = new LoginDto(username, password);
 
-        CustomerDto CUSTOMER_DTO = new CustomerDto(new Message("ACCESS GRANTED!", Message.Status.SUCCESS), CUSTOMER);
+        CustomerDto CUSTOMER_DTO = new CustomerDto(new Message("ACCESS GRANTED!", Message.Status.SUCCESS), profileReaderMapper.mapCustomer(CUSTOMER));
 
         Mockito.when(profileReaderServiceMock.login(username, password)).thenReturn(CUSTOMER_DTO);
 
@@ -364,8 +348,7 @@ public class ProfileReaderControllerTest
     }
 
     @Test
-    public void testLoginCustomerWhenDoesNotExistExpectFailure() throws Exception
-    {
+    public void testLoginCustomerWhenDoesNotExistExpectFailure() throws Exception {
         String username = "FAKE USERNAME";
         String password = "FAKE PASSWORD";
         final LoginDto loginDto = new LoginDto(username, password);

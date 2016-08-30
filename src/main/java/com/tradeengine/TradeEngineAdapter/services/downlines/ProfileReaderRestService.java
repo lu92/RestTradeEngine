@@ -4,6 +4,7 @@ import com.tradeengine.ProfileReader.CreateCustomerDto;
 import com.tradeengine.ProfileReader.CustomerDto;
 import com.tradeengine.ProfileReader.CustomerDtoList;
 import com.tradeengine.ProfileReader.LoginDto;
+import com.tradeengine.ProfileReader.dto.CustomerInfo;
 import com.tradeengine.TradeEngineAdapter.model.Customer;
 import com.tradeengine.TradeEngineAdapter.model.dto.CustomerDTO;
 import com.tradeengine.TradeEngineAdapter.services.layers.CustomerSupportLayer;
@@ -58,9 +59,10 @@ public class ProfileReaderRestService implements CustomerSupportLayer {
     }
 
     @Override
-    public CustomerDto updateCustomer(com.tradeengine.ProfileReader.entities.Customer customer) {
+    public CustomerDto updateCustomer(CustomerInfo customer) {
         HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+//        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON_UTF8));
+        headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
         HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
 
         ResponseEntity<CustomerDto> customerDtoResponseEntity =

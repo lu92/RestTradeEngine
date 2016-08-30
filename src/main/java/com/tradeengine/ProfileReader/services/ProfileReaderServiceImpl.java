@@ -3,6 +3,8 @@ package com.tradeengine.ProfileReader.services;
 import com.tradeengine.ProfileReader.CreateCustomerDto;
 import com.tradeengine.ProfileReader.CustomerDto;
 import com.tradeengine.ProfileReader.CustomerDtoList;
+import com.tradeengine.ProfileReader.mapper.ProfileReaderMapper;
+import com.tradeengine.ProfileReader.dto.CustomerInfo;
 import com.tradeengine.ProfileReader.entities.Customer;
 import com.tradeengine.ProfileReader.entities.TierLevel;
 import com.tradeengine.ProfileReader.repositories.CustomerRepository;
@@ -12,7 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProfileReaderServiceImpl implements ProfileReaderService
@@ -20,12 +24,16 @@ public class ProfileReaderServiceImpl implements ProfileReaderService
     @Autowired
     private CustomerRepository customerRepository;
 
+    @Autowired
+    private ProfileReaderMapper profileReaderMapper;
+
     @Override
     public CustomerDto getCustomer(long customerId)
     {
         if (customerRepository.exists(customerId))
         {
-            return new CustomerDto(new Message("customer has been delivered!", Message.Status.SUCCESS), customerRepository.getOne(customerId));
+            CustomerInfo customerInfo = profileReaderMapper.mapCustomer(customerRepository.getOne(customerId));
+            return new CustomerDto(new Message("customer has been delivered!", Message.Status.SUCCESS), customerInfo);
         }
         else
         {
@@ -39,11 +47,14 @@ public class ProfileReaderServiceImpl implements ProfileReaderService
         List<Customer> customerList = customerRepository.findAll();
         if (customerList.isEmpty())
         {
-            return new CustomerDtoList(new Message("Customer's list is empty", Message.Status.SUCCESS), customerList);
+            return new CustomerDtoList(new Message("Customer's list is empty", Message.Status.SUCCESS), new ArrayList<>());
         }
         else
         {
-            return new CustomerDtoList(new Message("Customer's list is filled", Message.Status.SUCCESS), customerList);
+            List<CustomerInfo> customers = customerList.stream()
+                    .map(customer -> profileReaderMapper.mapCustomer(customer))
+                    .collect(Collectors.toList());
+            return new CustomerDtoList(new Message("Customer's list is filled", Message.Status.SUCCESS), customers);
         }
     }
 
@@ -85,22 +96,25 @@ public class ProfileReaderServiceImpl implements ProfileReaderService
                     .build();
 
             Customer customerDb = customerRepository.save(customer);
-            return new CustomerDto(new Message("customer has been added!", Message.Status.SUCCESS), customerDb);
+            CustomerInfo customerInfo = profileReaderMapper.mapCustomer(customerDb);
+            return new CustomerDto(new Message("customer has been added!", Message.Status.SUCCESS), customerInfo);
         }
     }
 
     @Override
-    public CustomerDto updateCustomer(Customer customer)
+    public CustomerDto updateCustomer(CustomerInfo customerInfo)
     {
-        if (customer.getCustomerId() == null)
+        if (customerInfo.getCustomerId() == null)
         {
             return new CustomerDto(new Message("customerId is demanded!", Message.Status.FAILURE), null);
         }
         else
         {
-            if (customer.getCustomerId() != null && customerRepository.exists(customer.getCustomerId()))
+            if (customerInfo.getCustomerId() != null && customerRepository.exists(customerInfo.getCustomerId()))
             {
-                return new CustomerDto(new Message("customer has been updated!", Message.Status.SUCCESS), customerRepository.save(customer));
+                Customer customer = profileReaderMapper.mapCustomer(customerInfo);
+                Customer savedCustomer = customerRepository.save(customer);
+                return new CustomerDto(new Message("customer has been updated!", Message.Status.SUCCESS), profileReaderMapper.mapCustomer(savedCustomer));
             }
             else
             {
@@ -116,7 +130,8 @@ public class ProfileReaderServiceImpl implements ProfileReaderService
         if (findedByUsernameAndPassword.size() == 1)
         {
             Customer customer = findedByUsernameAndPassword.get(0);
-            return new CustomerDto(new Message("ACCESS GRANTED!", Message.Status.SUCCESS), customer);
+            CustomerInfo customerInfo = profileReaderMapper.mapCustomer(customer);
+            return new CustomerDto(new Message("ACCESS GRANTED!", Message.Status.SUCCESS), customerInfo);
         }
         else
         {

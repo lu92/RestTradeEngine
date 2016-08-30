@@ -6,7 +6,8 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @EnableAutoConfiguration
-@ComponentScan(basePackages = { "com.tradeengine.ProfileReader.entities", "com.tradeengine.ProfileReader.repositories", "com.tradeengine.ProfileReader.services" })
+@ComponentScan(basePackages = { "com.tradeengine.ProfileReader.entities", "com.tradeengine.ProfileReader.repositories",
+        "com.tradeengine.ProfileReader.services", "com.tradeengine.ProfileReader.mapper" })
 public class ProfileReaderIntegrationContext
 {
 }

@@ -14,7 +14,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 
 @Configuration
 @EnableAutoConfiguration(exclude = { ProfileReaderServiceImpl.class })
-@ComponentScan(basePackages = { "com.tradeengine.ProfileReader.entities", "com.tradeengine.ProfileReader.repositories", "com.tradeengine.ProfileReader.controllers" })
+@ComponentScan(basePackages = { "com.tradeengine.ProfileReader.entities", "com.tradeengine.ProfileReader.repositories",
+        "com.tradeengine.ProfileReader.controllers", "com.tradeengine.ProfileReader.mapper" })
 public class TestContext extends WebMvcConfigurerAdapter
 {
 

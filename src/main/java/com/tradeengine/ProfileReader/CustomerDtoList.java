@@ -1,5 +1,6 @@
 package com.tradeengine.ProfileReader;
 
+import com.tradeengine.ProfileReader.dto.CustomerInfo;
 import com.tradeengine.ProfileReader.entities.Customer;
 import com.tradeengine.common.Message;
 import lombok.AllArgsConstructor;
@@ -14,5 +15,5 @@ import java.util.List;
 public class CustomerDtoList
 {
     private Message message;
-    private List<Customer> customerList;
+    private List<CustomerInfo> customerList;
 }

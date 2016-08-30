@@ -3,6 +3,7 @@ package com.tradeengine.ProfileReader.services;
 import com.tradeengine.ProfileReader.CreateCustomerDto;
 import com.tradeengine.ProfileReader.CustomerDto;
 import com.tradeengine.ProfileReader.CustomerDtoList;
+import com.tradeengine.ProfileReader.dto.CustomerInfo;
 import com.tradeengine.ProfileReader.entities.Customer;
 import com.tradeengine.common.Message;
 
@@ -14,6 +15,6 @@ public interface ProfileReaderService
     CustomerDtoList getCustomerList();
     CustomerDto deleteCustomer(long customerId);
     CustomerDto createCustomer(CreateCustomerDto createCustomerDto);
-    CustomerDto updateCustomer(Customer customer);
+    CustomerDto updateCustomer(CustomerInfo customerInfo);
     CustomerDto login(String username, String password);
 }
