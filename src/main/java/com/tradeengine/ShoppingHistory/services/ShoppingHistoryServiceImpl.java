@@ -62,7 +62,7 @@ public class ShoppingHistoryServiceImpl implements ShoppingHistoryService {
     public ShoppingHistoryDto createShoppingHistory(long customerId) {
         if (shoppingHistoryRepository.findByCustomerId(customerId).isEmpty()) {
             ShoppingHistory shoppingHistory = ShoppingHistory.builder().customerId(customerId).syntheticId(UUID.randomUUID().toString())
-                    .spendMoney(Price.builder().amount(0).tax(0).build()).build();
+                    .spendMoney(Price.builder().amount(0).tax(0).price(0).currency("PLN").build()).build();
             ShoppingHistory shoppingHistoryDb = shoppingHistoryRepository.save(shoppingHistory);
             ShoppingHistoryInfo shoppingHistoryInfo = shoppingHistoryMapper.mapShoppingHistory(shoppingHistoryDb);
             return new ShoppingHistoryDto(new Message("Shopping history has been created!", Message.Status.SUCCESS), shoppingHistoryInfo);
@@ -91,10 +91,8 @@ public class ShoppingHistoryServiceImpl implements ShoppingHistoryService {
                     completedOrder.setSyntheticId(UUID.randomUUID().toString());
                     // Order Validation
 
-                    shoppingHistory.setSpendMoney(Price.builder()
-                            .amount(shoppingHistory.getSpendMoney().getAmount() + createCompletedOrderDto.getCost().getAmount())
-                            .tax(shoppingHistory.getSpendMoney().getTax() + createCompletedOrderDto.getCost().getTax())
-                            .build());
+                    shoppingHistory.getSpendMoney().addAmount(createCompletedOrderDto.getCost().getAmount());
+                    shoppingHistory.getSpendMoney().addTax(createCompletedOrderDto.getCost().getTax());
 
                     completedOrder.setShoppingHistory(shoppingHistory);
                     CompletedOrder completedOrderDb = completedOrderRepository.save(completedOrder);

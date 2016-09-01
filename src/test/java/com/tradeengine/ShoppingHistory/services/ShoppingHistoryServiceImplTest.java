@@ -83,7 +83,7 @@ public class ShoppingHistoryServiceImplTest {
         assertThat(shoppingHistoryDto_GET.getMessage().getMessage()).isEqualTo("Shopping history has been delivered!");
         assertThat(shoppingHistoryDto_GET.getMessage().getStatus()).isEqualTo(SUCCESS);
         assertThat(shoppingHistoryDto_GET.getShoppingHistory().getCustomerId()).isEqualTo(CUSTOMER_ID);
-        assertThat(shoppingHistoryDto_GET.getShoppingHistory().getSpendMoney()).isEqualTo(Price.builder().amount(0).tax(0).price(0).build());
+        assertThat(shoppingHistoryDto_GET.getShoppingHistory().getSpendMoney()).isEqualTo(Price.builder().amount(0).tax(0).price(0).currency("PLN").build());
         assertThat(shoppingHistoryDto_GET.getShoppingHistory().getCompletedOrderList()).isEmpty();
         assertThat(shoppingHistoryDto_GET.getShoppingHistory().getShoppingHistoryId()).isEqualTo(shoppingHistoryDto_CREATE.getShoppingHistory().getShoppingHistoryId());
     }
@@ -168,6 +168,12 @@ public class ShoppingHistoryServiceImplTest {
         assertThat(shoppingHistoryDto_CREATE.getMessage().getMessage()).isEqualTo("Shopping history has been created!");
         assertThat(shoppingHistoryDto_CREATE.getShoppingHistory()).isNotNull();
 
+        assertThat(shoppingHistoryDto_CREATE.getShoppingHistory().getSpendMoney().getAmount()).isEqualTo(0);
+        assertThat(shoppingHistoryDto_CREATE.getShoppingHistory().getSpendMoney().getTax()).isEqualTo(0);
+        assertThat(shoppingHistoryDto_CREATE.getShoppingHistory().getSpendMoney().getPrice()).isEqualTo(0);
+        assertThat(shoppingHistoryDto_CREATE.getShoppingHistory().getSpendMoney().getCurrency()).isEqualTo("PLN");
+
+
         assertThat(shoppingHistoryRepository.count()).isEqualTo(1);
         CreateCompletedOrderDto createCompletedOrderDto = shoppingHistoryMapper.mapCreateCompletedOrder(CUSTOMER_ID, COMPLETED_ORDER_1);
 
@@ -179,6 +185,11 @@ public class ShoppingHistoryServiceImplTest {
         assertThat(shoppingHistoryRepository.count()).isEqualTo(1);
         assertThat(completedOrderRepository.count()).isEqualTo(1);
         assertThat(soldProductRepository.count()).isEqualTo(2);
+
+        assertThat(shoppingHistoryDto.getShoppingHistory().getSpendMoney().getAmount()).isEqualTo(COMPLETED_ORDER_1.getCost().getAmount());
+        assertThat(shoppingHistoryDto.getShoppingHistory().getSpendMoney().getTax()).isEqualTo(COMPLETED_ORDER_1.getCost().getTax());
+        assertThat(shoppingHistoryDto.getShoppingHistory().getSpendMoney().getPrice()).isEqualTo(COMPLETED_ORDER_1.getCost().getPrice());
+        assertThat(shoppingHistoryDto.getShoppingHistory().getSpendMoney().getCurrency()).isEqualTo("PLN");
     }
 
     @Test
@@ -201,6 +212,11 @@ public class ShoppingHistoryServiceImplTest {
         assertThat(shoppingHistoryDto_1.getMessage().getMessage()).isEqualTo("Order has been added to shopping history!");
         assertThat(shoppingHistoryDto_1.getShoppingHistory()).isNotNull();
 
+        assertThat(shoppingHistoryDto_1.getShoppingHistory().getSpendMoney().getAmount()).isEqualTo(COMPLETED_ORDER_1.getCost().getAmount());
+        assertThat(shoppingHistoryDto_1.getShoppingHistory().getSpendMoney().getTax()).isEqualTo(COMPLETED_ORDER_1.getCost().getTax());
+        assertThat(shoppingHistoryDto_1.getShoppingHistory().getSpendMoney().getPrice()).isEqualTo(COMPLETED_ORDER_1.getCost().getPrice());
+        assertThat(shoppingHistoryDto_1.getShoppingHistory().getSpendMoney().getCurrency()).isEqualTo("PLN");
+
         CreateCompletedOrderDto createCompletedOrderDto2 = shoppingHistoryMapper.mapCreateCompletedOrder(CUSTOMER_ID, COMPLETED_ORDER_2);
         ShoppingHistoryDto shoppingHistoryDto_2 = shoppingHistoryService.addOrder(createCompletedOrderDto2);
         assertThat(shoppingHistoryDto_2.getMessage().getStatus()).isEqualTo(SUCCESS);
@@ -210,5 +226,10 @@ public class ShoppingHistoryServiceImplTest {
         assertThat(shoppingHistoryRepository.count()).isEqualTo(1);
         assertThat(completedOrderRepository.count()).isEqualTo(2);
         assertThat(soldProductRepository.count()).isEqualTo(4);
+
+        assertThat(shoppingHistoryDto_2.getShoppingHistory().getSpendMoney().getAmount()).isEqualTo(COMPLETED_ORDER_1.getCost().getAmount() + COMPLETED_ORDER_2.getCost().getAmount());
+        assertThat(shoppingHistoryDto_2.getShoppingHistory().getSpendMoney().getTax()).isEqualTo(COMPLETED_ORDER_1.getCost().getTax() + COMPLETED_ORDER_2.getCost().getTax());
+        assertThat(shoppingHistoryDto_2.getShoppingHistory().getSpendMoney().getPrice()).isEqualTo(COMPLETED_ORDER_1.getCost().getPrice() + COMPLETED_ORDER_2.getCost().getPrice());
+        assertThat(shoppingHistoryDto_2.getShoppingHistory().getSpendMoney().getCurrency()).isEqualTo("PLN");
     }
 }

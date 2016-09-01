@@ -153,13 +153,39 @@ public class BasketRestServiceTest {
     }
 
     @Test
+    public void testAllProductsArePresentButOneIsNotEnough() {
+        List<ProductInfo> products = products();
+        ProductInfo _IPHONE_6S = products.get(0);
+        ProductInfo _SGS7 = products.get(1);
+
+        Basket basket = new Basket(customerId, products, address);
+        ProductListDto productListDto = new ProductListDto(new Message("All requested product has been delivered!", SUCCESS), null, allProductsArePresentButOneIsNotEnough());
+        Mockito.when(tradeEngineRestService.getProductList(Mockito.any())).thenReturn(productListDto);
+        
+        // when
+        Order order = basketRestService.doShopping(basket);
+
+        //then
+        assertThat(order.getCustomerId()).isEqualTo(customerId);
+        assertThat(order.getTimeOfSale()).isNotNull();
+        assertThat(order.getProductList()).containsExactly(_IPHONE_6S, _SGS7);
+        assertThat(order.getAddress()).isEqualTo(address);
+        assertThat(order.getPrice()).isEqualTo(new Price(0, 0, 0, "PLN"));
+        assertThat(order.getFlowResults()).containsOnly(
+                new Error(1L, _IPHONE_6S.getCommercialName(), "", ErrorType.NOT_ENOUGH_AMOUNT_OF_PRODUCT));
+        assertThat(order.getGainedPoints()).isEqualTo(0L);
+        assertThat(order.getDiscountList()).isEmpty();
+        assertThat(order.getStatus()).isEqualTo(Message.Status.FAILURE);
+    }
+
+    @Test
     public void testExpectSuccess() {
         List<ProductInfo> products = products();
         ProductInfo _IPHONE_6S = products.get(0);
         ProductInfo _SGS7 = products.get(1);
 
         Basket basket = new Basket(customerId, products, address);
-        ProductListDto productListDto = new ProductListDto(new Message("All requested product has been delivered!", SUCCESS), null, allProductsAreAvailable());
+        ProductListDto productListDto = new ProductListDto(new Message("All requested product has been delivered!", SUCCESS), null, firstProductIsAvailableSecondIsNotAvailable());
         Mockito.when(tradeEngineRestService.getProductList(Mockito.any())).thenReturn(productListDto);
 
         ShoppingHistoryDto shoppingHistoryDto = new ShoppingHistoryDto(new Message("Order has been added to shopping history!", Message.Status.SUCCESS), null);
@@ -209,16 +235,29 @@ public class BasketRestServiceTest {
         return asList(IPHONE_6S);
     }
 
-    private List<ProductInfo> allProductsAreAvailable() {
+    private List<ProductInfo> firstProductIsAvailableSecondIsNotAvailable() {
+        ProductInfo IPHONE_6S = tradeEngineMapper.convertProduct(PRODUCT_IPHONE_6S);
+        IPHONE_6S.setProductId(1L);
+        IPHONE_6S.setAvailable(true);
+        IPHONE_6S.setQuantity(15);
+
+        ProductInfo SGS7 = tradeEngineMapper.convertProduct(PRODUCT_SGS7);
+        SGS7.setProductId(2L);
+        IPHONE_6S.setAvailable(true);
+        SGS7.setQuantity(15);
+        return asList(IPHONE_6S, SGS7);
+    }
+
+    private List<ProductInfo> allProductsArePresentButOneIsNotEnough() {
         ProductInfo IPHONE_6S = tradeEngineMapper.convertProduct(PRODUCT_IPHONE_6S);
         IPHONE_6S.setProductId(1L);
         IPHONE_6S.setAvailable(true);
         IPHONE_6S.setQuantity(5);
 
         ProductInfo SGS7 = tradeEngineMapper.convertProduct(PRODUCT_SGS7);
-        SGS7.setProductId(1L);
+        SGS7.setProductId(2L);
         SGS7.setAvailable(true);
-        SGS7.setQuantity(5);
+        SGS7.setQuantity(25);
         return asList(IPHONE_6S, SGS7);
     }
 }

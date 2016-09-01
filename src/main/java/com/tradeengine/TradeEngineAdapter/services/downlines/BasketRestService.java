@@ -100,6 +100,16 @@ public class BasketRestService extends BasketSupportLayer {
             collectedErrors.addAll(productsWhichAreNotEnough);
         }
 
+        if (requestedProducts.getMessage().getStatus() == SUCCESS) {
+
+            List<Error> productsWhichAreNotEnough = order.getProductList().stream()
+                    .filter(product -> product.getQuantity() > requestedProducts.getProduct(product.getProductId()).get().getQuantity())
+                    .map(productInfo -> new Error(productInfo.getProductId(), productInfo.getCommercialName(), "", ErrorType.NOT_ENOUGH_AMOUNT_OF_PRODUCT))
+                    .collect(Collectors.toList());
+
+            collectedErrors.addAll(productsWhichAreNotEnough);
+        }
+
         order.getFlowResults().addAll(collectedErrors);
         order.setGainedPoints(0L);
         order.setDiscountList(new ArrayList<>());

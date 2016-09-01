@@ -3,8 +3,8 @@ package com.tradeengine.TradeEngineAdapter.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.tradeengine.ProfileReader.entities.Address;
 import com.tradeengine.TradeEngine.dto.ProductInfo;
 import com.tradeengine.common.Message;
@@ -18,7 +18,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 @Data
 @Builder
@@ -27,8 +26,8 @@ import java.util.Optional;
 public class Order {
     private Long customerId;
 
-    @JsonSerialize(using = LocalDateSerializer.class)
-    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime timeOfSale;
 
     private List<ProductInfo> productList;
@@ -61,7 +60,7 @@ public class Order {
         return flowResults;
     }
 
-    public void addError(Error ... errors) {
+    public void addError(Error... errors) {
         getFlowResults().addAll(Arrays.asList(errors));
     }
 }
