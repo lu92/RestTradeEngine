@@ -12,7 +12,7 @@ public abstract class BasketSupportLayer {
 
     protected abstract Order calculateDiscount(Order order);
 
-    protected abstract Order UpdateCustomerStatus(Order order);
+    protected abstract Order updateCustomerStatus(Order order);
 
     protected abstract Order updateProductsAvailability(Order order);
 
@@ -25,6 +25,7 @@ public abstract class BasketSupportLayer {
             calculateOrder(order);
             calculateDiscount(order);
             updateProductsAvailability(order);
+            updateCustomerStatus(order);
             processOrder(order);
         }
         return order;

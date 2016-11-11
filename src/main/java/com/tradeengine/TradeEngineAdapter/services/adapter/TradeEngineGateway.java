@@ -21,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class TradeEngineAdapter implements Adapter, CustomerSupportLayer, TradeEngineSupportLayer {
+public class TradeEngineGateway implements Adapter, CustomerSupportLayer, TradeEngineSupportLayer {
 
     @Autowired
     private BasketRestService basketRestService;
@@ -155,6 +155,11 @@ public class TradeEngineAdapter implements Adapter, CustomerSupportLayer, TradeE
 
     @Override
     public ProductDto updateProduct(Product product) {
+        return null;
+    }
+
+    @Override
+    public ProductDto updateProductQuantity(long productId, int quantity) {
         return null;
     }
 

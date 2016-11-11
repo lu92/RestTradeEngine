@@ -22,6 +22,7 @@ public interface TradeEngineService
 //    ProductDto addProduct(long categoryId, Product product);
     ProductDto addProduct(CreateProductDto createProductDto);
     ProductDto updateProduct(Product product);
+    ProductDto updateProductQuantity(long productId, int quantity);
     ProductDto activateProduct(long productId);
     ProductDto deactivateProduct(long productId);
 

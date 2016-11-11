@@ -3,9 +3,11 @@ package com.tradeengine.TradeEngineAdapter.services.downlines;
 import com.tradeengine.ShoppingHistory.dto.CreateCompletedOrderDto;
 import com.tradeengine.ShoppingHistory.dto.ShoppingHistoryDto;
 import com.tradeengine.ShoppingHistory.dto.SoldProductInfo;
+import com.tradeengine.TradeEngine.dto.ProductDto;
 import com.tradeengine.TradeEngine.dto.ProductInfo;
 import com.tradeengine.TradeEngine.dto.ProductListDto;
 import com.tradeengine.TradeEngine.dto.RequestedProductsDto;
+import com.tradeengine.TradeEngine.mappers.TradeEngineMapper;
 import com.tradeengine.TradeEngineAdapter.model.Basket;
 import com.tradeengine.TradeEngineAdapter.model.Error;
 import com.tradeengine.TradeEngineAdapter.model.ErrorType;
@@ -133,6 +135,11 @@ public class BasketRestService extends BasketSupportLayer {
         return order;
     }
 
+    @Override
+    protected Order updateCustomerStatus(Order order) {
+        return null;
+    }
+
     protected Order UpdateCustomerStatus(Order order) {
 
         // zmienia ilosc pieniedzy i  tierlevel Customer'a
@@ -140,7 +147,17 @@ public class BasketRestService extends BasketSupportLayer {
     }
 
     protected Order updateProductsAvailability(Order order) {
-        // Will be implemented in future
+        ProductListDto productList = tradeEngineRestService.getProductList(new RequestedProductsDto(order.getProductList().stream()
+                .map(ProductInfo::getProductId)
+                .collect(Collectors.toList())));
+
+        for (ProductInfo productInfo : productList.getProductList())
+        {
+            tradeEngineRestService.updateProductQuantity(
+                    productInfo.getProductId(),
+                    productInfo.getQuantity() - order.getProduct(productInfo.getProductId()).get().getQuantity()
+            );
+        }
         return order;
     }
 

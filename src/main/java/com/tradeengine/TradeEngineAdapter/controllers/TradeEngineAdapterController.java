@@ -12,7 +12,7 @@ import com.tradeengine.TradeEngine.dto.ProductSchemeDto;
 import com.tradeengine.TradeEngineAdapter.model.Basket;
 import com.tradeengine.TradeEngineAdapter.model.Order;
 import com.tradeengine.TradeEngineAdapter.model.dto.CustomerDTO;
-import com.tradeengine.TradeEngineAdapter.services.adapter.TradeEngineAdapter;
+import com.tradeengine.TradeEngineAdapter.services.adapter.TradeEngineGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class TradeEngineAdapterController
 {
     @Autowired(required = false)
-    private TradeEngineAdapter tradeEngineAdapter;
+    private TradeEngineGateway tradeEngineAdapter;
 
     @RequestMapping(value = "/ProfileReader/{customerId}", method = RequestMethod.GET)
     @ResponseBody

@@ -65,6 +65,11 @@ public class TradeEngineRestService implements TradeEngineSupportLayer {
     }
 
     @Override
+    public ProductDto updateProductQuantity(long productId, int quantity) {
+        return restTemplate.postForObject(PRODUCT_BASE_URL + "/Quantity/" +productId, quantity, ProductDto.class);
+    }
+
+    @Override
     public ProductDto activateProduct(long productId) {
         return restTemplate.getForObject(PRODUCT_BASE_URL + "/Activate/" + productId, ProductDto.class);
     }

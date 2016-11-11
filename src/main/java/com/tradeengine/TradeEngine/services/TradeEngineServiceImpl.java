@@ -234,6 +234,19 @@ public class TradeEngineServiceImpl implements TradeEngineService {
     }
 
     @Override
+    public ProductDto updateProductQuantity(long productId, int quantity) {
+        if (productRepository.exists(productId)) {
+            Product productDb = productRepository.getOne(productId);
+            productDb.setQuantity(quantity);
+            productDb = productRepository.save(productDb);
+            ProductInfo productInfo = tradeEngineMapper.convertProduct(productDb);
+            return new ProductDto(new Message("Quantity of product's has been changed!", SUCCESS), productInfo);
+        } else {
+            return new ProductDto(new Message("Product doesn't exist!", FAILURE), null);
+        }
+    }
+
+    @Override
     public ProductDto activateProduct(long productId) {
         if (productRepository.exists(productId)) {
             Product productDb = productRepository.getOne(productId);

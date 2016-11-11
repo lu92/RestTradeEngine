@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Data
 @Builder
@@ -62,5 +63,11 @@ public class Order {
 
     public void addError(Error... errors) {
         getFlowResults().addAll(Arrays.asList(errors));
+    }
+
+    public Optional<ProductInfo> getProduct(Long productId) {
+        return getProductList().stream()
+                .filter(productInfo -> productInfo.getProductId().equals(productId))
+                .findFirst();
     }
 }

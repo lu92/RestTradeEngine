@@ -3,17 +3,10 @@ package com.tradeengine.TradeEngine.controllers;
 import com.tradeengine.TradeEngine.dto.*;
 import com.tradeengine.TradeEngine.dto.productCriteria.ProductCriteria;
 import com.tradeengine.TradeEngine.entities.Product;
-import com.tradeengine.TradeEngine.mappers.TradeEngineMapper;
 import com.tradeengine.TradeEngine.services.TradeEngineServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.logging.Logger;
 
 @RestController
@@ -24,8 +17,6 @@ public class TradeEngineController {
     @Autowired(required = false)
     private TradeEngineServiceImpl tradeEngineService;
 
-    @Autowired
-    private TradeEngineMapper tradeEngineMapper;
 
     @RequestMapping(value = "/Category/{categoryId}", method = RequestMethod.GET)
     @ResponseBody
@@ -79,7 +70,6 @@ public class TradeEngineController {
     @RequestMapping(value = "/Product", method = RequestMethod.POST)
     @ResponseBody
     public ProductDto addProduct(@RequestBody CreateProductDto createProductDto) {
-//        return tradeEngineService.addProduct(createProductDto.getCategoryId(), tradeEngineMapper.convertProduct(createProductDto));
         return tradeEngineService.addProduct(createProductDto);
     }
 
@@ -89,12 +79,12 @@ public class TradeEngineController {
         return tradeEngineService.updateProduct(product);
     }
 
-    //    @RequestMapping(value = "/Product/{id}", method = RequestMethod.DELETE)
-    //    @ResponseBody
-    //    public Message deleteProduct(@PathVariable(value = "id") long id)
-    //    {
-    //        return tradeEngineService.deleteProduct(id);
-    //    }
+    @RequestMapping(value = "/Product/Quantity/{productId}", method = RequestMethod.POST)
+    @ResponseBody
+    public ProductDto changeQuantityOfProduct(@PathVariable(value = "productId") long productId, @RequestBody Integer quantity) {
+        return tradeEngineService.updateProductQuantity(productId, quantity);
+    }
+
 
     @RequestMapping(value = "/Product/Activate/{productId}", method = RequestMethod.GET)
     @ResponseBody
