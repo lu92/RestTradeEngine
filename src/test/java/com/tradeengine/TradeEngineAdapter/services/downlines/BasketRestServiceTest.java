@@ -38,6 +38,9 @@ public class BasketRestServiceTest {
     @Mock
     private TradeEngineRestService tradeEngineRestService;
 
+    @Mock
+    private ProfileReaderRestService profileReaderRestService;
+
     @InjectMocks
     private BasketRestService basketRestService;
 
@@ -141,11 +144,11 @@ public class BasketRestServiceTest {
         assertThat(order.getProductList()).containsExactly(_IPHONE_6S, _SGS7);
         assertThat(order.getAddress()).isNull();
         assertThat(order.getPrice()).isEqualTo(new Price(0, 0, 0, "PLN"));
-        assertThat(order.getFlowResults()).hasSize(4).containsOnly(
+        assertThat(order.getFlowResults()).hasSize(2).containsOnly(
                 new Error(null, "", "Missing customer id!", ErrorType.MISSING_CUSTOMER_ID),
-                new Error(null, "", "Missing address!", ErrorType.MISSING_ADDRESS),
-                new Error(1L, _IPHONE_6S.getCommercialName(), "", ErrorType.NOT_ENOUGH_AMOUNT_OF_PRODUCT),
-                new Error(2L, _SGS7.getCommercialName(), "", ErrorType.PRODUCT_IS_NOT_AVAILABLE)
+                new Error(null, "", "Missing address!", ErrorType.MISSING_ADDRESS)
+//                new Error(1L, _IPHONE_6S.getCommercialName(), "", ErrorType.NOT_ENOUGH_AMOUNT_OF_PRODUCT),
+//                new Error(2L, _SGS7.getCommercialName(), "", ErrorType.PRODUCT_IS_NOT_AVAILABLE)
         );
         assertThat(order.getGainedPoints()).isEqualTo(0L);
         assertThat(order.getDiscountList()).isEmpty();

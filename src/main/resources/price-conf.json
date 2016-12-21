@@ -1,0 +1,22 @@
+[
+  {
+    "currency": "USD",
+    "value": 4.17
+  },
+  {
+    "currency": "EUR",
+    "value": 4.42
+  },
+  {
+    "currency": "CHF",
+    "value": 4.11
+  },
+  {
+    "currency": "GBP",
+    "value": 5.20
+  },
+  {
+    "currency": "PLN",
+    "value": 1.00
+  }
+]

@@ -8,6 +8,7 @@ import com.tradeengine.TradeEngine.dto.ProductInfo;
 import com.tradeengine.TradeEngine.dto.ProductListDto;
 import com.tradeengine.TradeEngine.dto.RequestedProductsDto;
 import com.tradeengine.TradeEngine.mappers.TradeEngineMapper;
+import com.tradeengine.TradeEngineAdapter.exceptions.*;
 import com.tradeengine.TradeEngineAdapter.model.Basket;
 import com.tradeengine.TradeEngineAdapter.model.Error;
 import com.tradeengine.TradeEngineAdapter.model.ErrorType;
@@ -25,16 +26,28 @@ import java.util.stream.Collectors;
 import static com.tradeengine.common.Message.Status.*;
 
 @Component
-public class BasketRestService extends BasketSupportLayer {
+public class BasketRestService implements BasketSupportLayer {
 
-    @Autowired
+    private ProfileReaderRestService profileReaderRestService;
+    private TradeEngineRestService tradeEngineRestService;
     private ShoppingHistoryRestService shoppingHistoryRestService;
 
+//    @Autowired
+//    public BasketRestService(ShoppingHistoryRestService shoppingHistoryRestService, TradeEngineRestService tradeEngineRestService) {
+//        this.shoppingHistoryRestService = shoppingHistoryRestService;
+//        this.tradeEngineRestService = tradeEngineRestService;
+//    }
+
     @Autowired
-    private TradeEngineRestService tradeEngineRestService;
+    public BasketRestService(ProfileReaderRestService profileReaderRestService,
+                             TradeEngineRestService tradeEngineRestService,
+                             ShoppingHistoryRestService shoppingHistoryRestService) {
+        this.profileReaderRestService = profileReaderRestService;
+        this.tradeEngineRestService = tradeEngineRestService;
+        this.shoppingHistoryRestService = shoppingHistoryRestService;
+    }
 
-
-    protected Order createOrder(Basket basket) {
+    public Order createOrder(Basket basket) throws InvalidBasketException {
 
         Order order = Order.builder()
                 .customerId(basket.getCustomerId())
@@ -44,6 +57,7 @@ public class BasketRestService extends BasketSupportLayer {
                 .price(new Price(0, 0, 0, "PLN"))
                 .build();
 
+
         if (order.getCustomerId() == null) {
             order.getFlowResults().add(new Error(null, "", "Missing customer id!", ErrorType.MISSING_CUSTOMER_ID));
         }
@@ -52,21 +66,23 @@ public class BasketRestService extends BasketSupportLayer {
             order.getFlowResults().add(new Error(null, "", "Missing address!", ErrorType.MISSING_ADDRESS));
         }
 
+        if (basket.getProductList().isEmpty()) {
+            order.addError(new Error(null, "", "Basket is Empty!", ErrorType.EMPTY_BASKET));
+        }
+
+        if (!order.getFlowResults().isEmpty()) {
+            order.setGainedPoints(0l);
+            order.setDiscountList(new ArrayList<>());
+            order.setStatus(FAILURE);
+            throw new InvalidBasketException(order);
+        }
+
         return order;
     }
 
-    protected Order checkProductsAvailability(Order order) {
+    public Order checkProductsAvailability(Order order) throws ProductsAvailabilityException {
 
         List<Error> collectedErrors = new ArrayList<>();
-
-        if (order.getProductList().isEmpty()) {
-            order.setProductList(new ArrayList<>());
-            order.addError(new Error(null, "", "Basket is Empty!", ErrorType.EMPTY_BASKET));
-            order.setGainedPoints(0L);
-            order.setDiscountList(new ArrayList<>());
-            order.setStatus(FAILURE);
-            return order;
-        }
 
         ProductListDto requestedProducts = tradeEngineRestService.getProductList(
                 new RequestedProductsDto(order.getProductList().stream()
@@ -112,16 +128,19 @@ public class BasketRestService extends BasketSupportLayer {
             collectedErrors.addAll(productsWhichAreNotEnough);
         }
 
-        order.getFlowResults().addAll(collectedErrors);
-        order.setGainedPoints(0L);
-        order.setDiscountList(new ArrayList<>());
-        order.setStatus(FAILURE);
+        if (!collectedErrors.isEmpty()) {
+            order.getFlowResults().addAll(collectedErrors);
+            order.setGainedPoints(0L);
+            order.setDiscountList(new ArrayList<>());
+            order.setStatus(FAILURE);
+            throw new ProductsAvailabilityException(order);
+        }
 
         return order;
     }
 
 
-    protected Order calculateOrder(Order order) {
+    public Order calculateOrder(Order order) {
         order.getProductList().stream().forEach(productInfo ->
         {
             order.getPrice().addAmount(productInfo.getQuantity() * productInfo.getPrice().getAmount());
@@ -130,29 +149,30 @@ public class BasketRestService extends BasketSupportLayer {
         return order;
     }
 
-    protected Order calculateDiscount(Order order) {
+    public Order calculateDiscount(Order order) {
         // Will be implemented in future
+        order.setGainedPoints(0L);
         return order;
     }
 
     @Override
-    protected Order updateCustomerStatus(Order order) {
-        return null;
+    public Order checkAccountBalance(Order order) throws NotEnoughAccountBalanceException {
+
+        return order;
     }
 
-    protected Order UpdateCustomerStatus(Order order) {
-
+    @Override
+    public Order updateCustomerStatus(Order order) {
         // zmienia ilosc pieniedzy i  tierlevel Customer'a
         return order;
     }
 
-    protected Order updateProductsAvailability(Order order) {
+    public Order updateProductsAvailability(Order order) {
         ProductListDto productList = tradeEngineRestService.getProductList(new RequestedProductsDto(order.getProductList().stream()
                 .map(ProductInfo::getProductId)
                 .collect(Collectors.toList())));
 
-        for (ProductInfo productInfo : productList.getProductList())
-        {
+        for (ProductInfo productInfo : productList.getProductList()) {
             tradeEngineRestService.updateProductQuantity(
                     productInfo.getProductId(),
                     productInfo.getQuantity() - order.getProduct(productInfo.getProductId()).get().getQuantity()
@@ -161,7 +181,7 @@ public class BasketRestService extends BasketSupportLayer {
         return order;
     }
 
-    protected Order processOrder(Order order) {
+    public Order processOrder(Order order) {
 //        CustomerDto customer = profileReaderRestService.getCustomer(order.getCustomerId());
 
         CreateCompletedOrderDto createCompletedOrderDto = new CreateCompletedOrderDto(
@@ -189,5 +209,35 @@ public class BasketRestService extends BasketSupportLayer {
             order.setStatus(FAILURE);
 
         return order;
+    }
+
+    public Order doShopping(Basket basket) {
+        Order order = null;
+//        = Order.builder()
+////                .customerId(basket.getCustomerId())
+//                .timeOfSale(LocalDateTime.now())
+////                .productList(basket.getProductList())
+////                .address(basket.getAddress())
+//                .price(new Price(0, 0, 0, "PLN"))
+//                .build();
+        try {
+            order = createOrder(basket);
+            checkProductsAvailability(order);
+            calculateOrder(order);
+            calculateDiscount(order);
+            checkAccountBalance(order);
+            updateProductsAvailability(order);
+            updateCustomerStatus(order);
+            processOrder(order);
+        } catch (InvalidBasketException e) {
+            order = e.getOrder();
+
+        } catch (ProductsAvailabilityException e) {
+
+        } catch (NotEnoughAccountBalanceException e) {
+
+        }
+        return order;
+
     }
 }

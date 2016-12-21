@@ -15,12 +15,12 @@ import org.springframework.stereotype.Component;
 @Component
 class CustomerShoppingHistoryInfoBuilder {
 
-    @Autowired
     private TradeEngineRestService tradeEngineRestService;
-
     private Customer customer;
 
-    public CustomerShoppingHistoryInfoBuilder() {
+    @Autowired
+    public CustomerShoppingHistoryInfoBuilder(TradeEngineRestService tradeEngineRestService) {
+        this.tradeEngineRestService = tradeEngineRestService;
         customer = new Customer();
     }
 

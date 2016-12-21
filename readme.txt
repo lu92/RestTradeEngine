@@ -24,3 +24,8 @@ do zaimplementowania:
 * w kategorii scharakteryzowac ktore pola beda wyswietlane przy ktotkim opisie
 * dorobic ceny w produktach
 * gwiazdki z opiniami o produkcie 0-6
+
+
+//*********************
+
+przeliczanie statusu clienta

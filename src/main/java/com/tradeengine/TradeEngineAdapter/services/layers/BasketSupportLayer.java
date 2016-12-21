@@ -1,33 +1,25 @@
 package com.tradeengine.TradeEngineAdapter.services.layers;
 
+import com.tradeengine.TradeEngineAdapter.exceptions.*;
 import com.tradeengine.TradeEngineAdapter.model.Basket;
 import com.tradeengine.TradeEngineAdapter.model.Order;
 
-public abstract class BasketSupportLayer {
-    protected abstract Order createOrder(Basket basket);
+public interface BasketSupportLayer {
+    Order createOrder(Basket basket) throws InvalidBasketException;
 
-    protected abstract Order checkProductsAvailability(Order order);
+    Order checkProductsAvailability(Order order) throws ProductsAvailabilityException;
 
-    protected abstract Order calculateOrder(Order order);
+    Order calculateOrder(Order order);
 
-    protected abstract Order calculateDiscount(Order order);
+    Order calculateDiscount(Order order);
 
-    protected abstract Order updateCustomerStatus(Order order);
+    Order checkAccountBalance(Order order) throws NotEnoughAccountBalanceException;
 
-    protected abstract Order updateProductsAvailability(Order order);
+    Order updateCustomerStatus(Order order);
 
-    protected abstract Order processOrder(Order order);
+    Order updateProductsAvailability(Order order);
 
-    public Order doShopping(Basket basket) {
-        Order order = createOrder(basket);
-        checkProductsAvailability(order);
-        if (order.getFlowResults().isEmpty()) {
-            calculateOrder(order);
-            calculateDiscount(order);
-            updateProductsAvailability(order);
-            updateCustomerStatus(order);
-            processOrder(order);
-        }
-        return order;
-    }
+    Order processOrder(Order order);
+
+    Order doShopping(Basket basket);
 }

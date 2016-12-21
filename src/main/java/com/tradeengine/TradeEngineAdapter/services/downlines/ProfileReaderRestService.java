@@ -72,6 +72,6 @@ public class ProfileReaderRestService implements CustomerSupportLayer {
 
     @Override
     public CustomerDto login(String username, String password) {
-        return restTemplate.postForObject(PROFILE_READER_BASE_URL, new LoginDto(username, password), CustomerDto.class);
+        return restTemplate.postForObject(PROFILE_READER_BASE_URL + "/login", new LoginDto(username, password), CustomerDto.class);
     }
 }

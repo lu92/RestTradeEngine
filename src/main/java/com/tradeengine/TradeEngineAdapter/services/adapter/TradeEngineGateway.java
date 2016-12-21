@@ -23,20 +23,23 @@ import org.springframework.stereotype.Service;
 @Service
 public class TradeEngineGateway implements Adapter, CustomerSupportLayer, TradeEngineSupportLayer {
 
-    @Autowired
-    private BasketRestService basketRestService;
-
-    @Autowired
     private ProfileReaderRestService profileReaderRestService;
-
-    @Autowired
     private TradeEngineRestService tradeEngineRestService;
-
-    @Autowired
     private ShoppingHistoryRestService shoppingHistoryRestService;
+    private BasketRestService basketRestService;
+    private CustomerShoppingHistoryInfoBuilder customerShoppingHistoryInfoBuilder;
 
     @Autowired
-    private CustomerShoppingHistoryInfoBuilder customerShoppingHistoryInfoBuilder;
+    public TradeEngineGateway(ProfileReaderRestService profileReaderRestService,
+                              TradeEngineRestService tradeEngineRestService,
+                              ShoppingHistoryRestService shoppingHistoryRestService,
+                              BasketRestService basketRestService) {
+        this.profileReaderRestService = profileReaderRestService;
+        this.tradeEngineRestService = tradeEngineRestService;
+        this.shoppingHistoryRestService = shoppingHistoryRestService;
+        this.basketRestService = basketRestService;
+        this.customerShoppingHistoryInfoBuilder = new CustomerShoppingHistoryInfoBuilder(tradeEngineRestService);
+    }
 
     @Override
     public CustomerDto getCustomer(long customerId) {
@@ -65,7 +68,7 @@ public class TradeEngineGateway implements Adapter, CustomerSupportLayer, TradeE
 
     @Override
     public CustomerDto login(String username, String password) {
-        return null;
+        return profileReaderRestService.login(username, password);
     }
 
     @Override
