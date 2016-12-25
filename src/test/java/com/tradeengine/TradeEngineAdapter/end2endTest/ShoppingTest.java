@@ -41,6 +41,7 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.util.Arrays;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 @RunWith(MockitoJUnitRunner.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -69,7 +70,7 @@ public class ShoppingTest {
     private static ProductDto iphone6SproductDto;
 
     @Test
-    public void _1_createCustomer() throws IOException {
+    public void _01_createCustomer() throws IOException {
         final CreateCustomerDto CREATE_CUSTOMER_DTO
                 = new CreateCustomerDto(CUSTOMER_FIRSTNAME, CUSTOMER_LASTNAME, EMAIL,
                 CUSTOMER_BIRTHDAY, ADDRESS, CREDIT_CARD, USERNAME, PASSWORD);
@@ -82,7 +83,7 @@ public class ShoppingTest {
     }
 
     @Test
-    public void _2_createCategory() throws IOException {
+    public void _02_createCategory() throws IOException {
         CreateCategoryDto createCategoryDto = new CreateCategoryDto(PHONES_CATEGORY_NAME, null, PHONES_PRODUCT_SCHEME);
         logger.info(TestUtils.convertObjectToJsonText(createCategoryDto));
 
@@ -92,7 +93,7 @@ public class ShoppingTest {
 
 
     @Test
-    public void _3_createProducts() throws IOException {
+    public void _03_createProducts() throws IOException {
         // SGS 6
         final CreateProductDto createSGS6ProductDto = new CreateProductDto(categoryDto.getCategoryInfo().getCategoryId(),
                 "SAMSUNG GALAXY S6", "SAMSUNG GALAXY S6 Description", 10,
@@ -152,7 +153,7 @@ public class ShoppingTest {
     }
 
     @Test
-    public void _4_makeProductsAvailable() throws IOException {
+    public void _04_makeProductsAvailable() throws IOException {
         tradeEngineGateway.activateProduct(sgs6productDto.getProductInfo().getProductId());
         tradeEngineGateway.activateProduct(sgs7productDto.getProductInfo().getProductId());
         tradeEngineGateway.activateProduct(sgs4productDto.getProductInfo().getProductId());
@@ -160,7 +161,7 @@ public class ShoppingTest {
     }
 
     @Test
-    public void _5_checkProductsAvailablility() throws IOException {
+    public void _05_checkProductsAvailablility() throws IOException {
         ProductListDto productListDto = tradeEngineGateway.getProductList(
                 new RequestedProductsDto(Arrays.asList(
                         sgs7productDto.getProductInfo().getProductId(),
@@ -184,7 +185,7 @@ public class ShoppingTest {
     }
 
     @Test
-    public void _5_loginCustomer() throws IOException {
+    public void _06_loginCustomer() throws IOException {
         CustomerDto login = tradeEngineGateway.login(
                 customerDto.getCustomer().getUsername(),
                 customerDto.getCustomer().getPassword());
@@ -193,7 +194,7 @@ public class ShoppingTest {
     }
 
     @Test
-    public void test() throws IOException {
+    public void _07_basketQuery() throws IOException {
 
         sgs7productDto.getProductInfo().setQuantity(5);
 
@@ -215,6 +216,94 @@ public class ShoppingTest {
         CustomerDTO customerWithShoppingHistory = tradeEngineGateway.getCustomerWithShoppingHistory(customerDto.getCustomer().getCustomerId());
         logger.info(TestUtils.convertObjectToJsonText(customerWithShoppingHistory));
 
+        assertThat(customerWithShoppingHistory.getMessage().getStatus()).isEqualTo(SUCCESS);
+        assertThat(customerWithShoppingHistory.getCustomer().getShoppingHistory().getOrderList()).isNotEmpty();
+
+        Order savedOrder = customerWithShoppingHistory.getCustomer().getShoppingHistory().getOrderList().get(0);
+        assertThat(savedOrder.getProductList()).hasSize(2);
+        assertThat(savedOrder.getProductList().get(0).getCommercialName()).isEqualTo(sgs6productDto.getProductInfo().getCommercialName());
+        assertThat(savedOrder.getProductList().get(1).getCommercialName()).isEqualTo(sgs7productDto.getProductInfo().getCommercialName());
+
+
+        // validate first order price
+        assertThat(savedOrder.getPrice()).isEqualTo(
+                Price.builder().amount(20000).tax(5000).price(25000).currency("PLN").build());
+
+        // validate shopping-history's price
+        assertThat(customerWithShoppingHistory.getCustomer().getShoppingHistory().getTotalPrice()).isEqualTo(
+                Price.builder().amount(20000).tax(5000).price(25000).currency("PLN").build());
+    }
+
+    @Test
+    public void _08_validateCustomerBalance() throws IOException {
+        double balance = customerDto.getCustomer().getCreditCard().getBalance();
+        CustomerDto customer = tradeEngineGateway.getCustomer(customerDto.getCustomer().getCustomerId());
+        assertThat(customer.getCustomer().getCreditCard().getBalance()).isEqualTo(balance - 25000);
 
     }
+
+    @Test
+    public void _09_checkProductAvability() throws IOException {
+        ProductListDto productListDto = tradeEngineGateway.getProductList(
+                new RequestedProductsDto(Arrays.asList(
+                        sgs7productDto.getProductInfo().getProductId(),
+                        sgs6productDto.getProductInfo().getProductId())));
+
+        logger.info(TestUtils.convertObjectToJsonText(productListDto));
+
+        // sgs7's quantity should equal to 5
+        assertThat(productListDto.getProduct(sgs7productDto.getProductInfo().getProductId()).isPresent()).isTrue();
+        assertThat(productListDto.getProduct(sgs7productDto.getProductInfo().getProductId()).get().isAvailable()).isTrue();
+        assertThat(productListDto.getProduct(sgs7productDto.getProductInfo().getProductId()).get().getQuantity()).isEqualTo(5);
+
+
+        // sgs6 should not be available
+        assertThat(productListDto.getProduct(sgs6productDto.getProductInfo().getProductId()).isPresent()).isTrue();
+        assertThat(productListDto.getProduct(sgs6productDto.getProductInfo().getProductId()).get().isAvailable()).isFalse();
+        assertThat(productListDto.getProduct(sgs6productDto.getProductInfo().getProductId()).get().getQuantity()).isEqualTo(0);
+    }
+
+    @Test
+    public void _10_basketQuery() throws IOException {
+
+        sgs4productDto.getProductInfo().setQuantity(10);
+        iphone6SproductDto.getProductInfo().setQuantity(10);
+
+        // creating second basket query
+        Basket basket = new Basket(
+                customerDto.getCustomer().getCustomerId(),
+                Arrays.asList(sgs4productDto.getProductInfo(), iphone6SproductDto.getProductInfo()),
+                customerDto.getCustomer().getAddress());
+
+        logger.info(TestUtils.convertObjectToJsonText(basket));
+
+        // invoke shopping process
+        Order order = tradeEngineGateway.doShopping(basket);
+        logger.info(TestUtils.convertObjectToJsonText(order));
+
+        ShoppingHistoryDto shoppingHistory = shoppingHistoryRestService.getShoppingHistory(customerDto.getCustomer().getCustomerId());
+        logger.info(TestUtils.convertObjectToJsonText(shoppingHistory));
+
+        CustomerDTO customerWithShoppingHistory = tradeEngineGateway.getCustomerWithShoppingHistory(customerDto.getCustomer().getCustomerId());
+        logger.info(TestUtils.convertObjectToJsonText(customerWithShoppingHistory));
+
+        assertThat(customerWithShoppingHistory.getMessage().getStatus()).isEqualTo(SUCCESS);
+        assertThat(customerWithShoppingHistory.getCustomer().getShoppingHistory().getOrderList()).isNotEmpty();
+
+        Order savedOrder = customerWithShoppingHistory.getCustomer().getShoppingHistory().getOrderList().get(1);
+        assertThat(savedOrder.getProductList()).hasSize(2);
+        assertThat(savedOrder.getProductList().get(0).getCommercialName()).isEqualTo(sgs4productDto.getProductInfo().getCommercialName());
+        assertThat(savedOrder.getProductList().get(1).getCommercialName()).isEqualTo(iphone6SproductDto.getProductInfo().getCommercialName());
+
+
+        // validate second order price
+        assertThat(savedOrder.getPrice()).isEqualTo(
+                Price.builder().amount(27000).tax(7250).price(34250).currency("PLN").build());
+
+        // validate shopping-history's price
+        assertThat(customerWithShoppingHistory.getCustomer().getShoppingHistory().getTotalPrice()).isEqualTo(
+                Price.builder().amount(47000).tax(12250).price(59250).currency("PLN").build());
+    }
+
+
 }

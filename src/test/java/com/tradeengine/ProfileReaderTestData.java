@@ -34,7 +34,7 @@ public class ProfileReaderTestData
     public static final String CREDIT_CARD_NUMBER = "0000024534536456345345";
     public static final String CREDIT_CARD_NUMBER_2 = "1232224534536456345345";
     public static final String CURRENCY = "USD";
-    public static final double BALANCE = 100;
+    public static final double BALANCE = 100000;
 
     public static final Address ADDRESS = Address.builder()
             .city(CITY).country(COUNTRY).street(STREET).zipCode(ZIP_CODE)

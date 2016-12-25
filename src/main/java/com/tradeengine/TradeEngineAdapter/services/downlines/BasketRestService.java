@@ -173,10 +173,12 @@ public class BasketRestService implements BasketSupportLayer {
                 .collect(Collectors.toList())));
 
         for (ProductInfo productInfo : productList.getProductList()) {
+            int newQuantity = productInfo.getQuantity() - order.getProduct(productInfo.getProductId()).get().getQuantity();
             tradeEngineRestService.updateProductQuantity(
-                    productInfo.getProductId(),
-                    productInfo.getQuantity() - order.getProduct(productInfo.getProductId()).get().getQuantity()
-            );
+                    productInfo.getProductId(),newQuantity);
+
+            if (newQuantity == 0)
+                tradeEngineRestService.deactivateProduct(productInfo.getProductId());
         }
         return order;
     }
