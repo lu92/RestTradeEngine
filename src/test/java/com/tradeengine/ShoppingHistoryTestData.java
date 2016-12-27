@@ -75,7 +75,7 @@ public class ShoppingHistoryTestData
             .soldProductsList(Arrays.asList(SOLD_PRODUCT_1, SOLD_PRODUCT_2))
             .address(ADDRESS)
             .cost(Price.builder().amount(30).tax(6.90).price(36.90).currency(CURRENCY_PLN).build())
-            .gainedPoints(50L)
+            .gainedPoints(50)
             .build();
 
     public static final CompletedOrder COMPLETED_ORDER_2 = CompletedOrder.builder()
@@ -84,7 +84,7 @@ public class ShoppingHistoryTestData
             .soldProductsList(Arrays.asList(SOLD_PRODUCT_3, SOLD_PRODUCT_4))
             .address(ProfileReaderTestData.ADDRESS)
             .cost(Price.builder().amount(120).tax(55.30).price(175.30).currency(CURRENCY_PLN).build())
-            .gainedPoints(100L)
+            .gainedPoints(100)
             .build();
 
     public static final CompletedOrder EMPTY_COMPLETED_ORDER = CompletedOrder.builder()

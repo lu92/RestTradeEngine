@@ -22,4 +22,12 @@ public class CreditCard
     private String number;
     private double balance;
     private String currency;
+
+    public void increaseBalance(double money) {
+        this.balance += money;
+    }
+
+    public void decreaseBalance(double money) {
+        this.balance -= money;
+    }
 }

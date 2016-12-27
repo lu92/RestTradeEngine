@@ -33,7 +33,7 @@ public class Order {
 
     private List<ProductInfo> productList;
     private Address address;
-    private Long gainedPoints;
+    private Integer gainedPoints;
     private List<Discount> discountList;
     private List<Error> flowResults;
     private Price price;

@@ -25,7 +25,7 @@ public class CreateCompletedOrderDto {
     private LocalDateTime timeOfSale;
     private List<SoldProductInfo> soldProductsList;
     private Address address;
-    private Long gainedPoints;
+    private Integer gainedPoints;
     private Price cost;
 
     public List<SoldProductInfo> getSoldProductsList() {

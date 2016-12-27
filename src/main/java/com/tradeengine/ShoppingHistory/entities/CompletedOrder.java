@@ -55,7 +55,7 @@ public class CompletedOrder {
 
     private String syntheticId;
 
-    private Long gainedPoints;
+    private Integer gainedPoints;
 
     @Embedded
     private Price cost;

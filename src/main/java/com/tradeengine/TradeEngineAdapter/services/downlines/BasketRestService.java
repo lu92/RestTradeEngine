@@ -1,5 +1,7 @@
 package com.tradeengine.TradeEngineAdapter.services.downlines;
 
+import com.tradeengine.DynamicRetailer.entities.RuleType;
+import com.tradeengine.ProfileReader.CustomerDto;
 import com.tradeengine.ShoppingHistory.dto.CreateCompletedOrderDto;
 import com.tradeengine.ShoppingHistory.dto.ShoppingHistoryDto;
 import com.tradeengine.ShoppingHistory.dto.SoldProductInfo;
@@ -9,10 +11,8 @@ import com.tradeengine.TradeEngine.dto.ProductListDto;
 import com.tradeengine.TradeEngine.dto.RequestedProductsDto;
 import com.tradeengine.TradeEngine.mappers.TradeEngineMapper;
 import com.tradeengine.TradeEngineAdapter.exceptions.*;
-import com.tradeengine.TradeEngineAdapter.model.Basket;
+import com.tradeengine.TradeEngineAdapter.model.*;
 import com.tradeengine.TradeEngineAdapter.model.Error;
-import com.tradeengine.TradeEngineAdapter.model.ErrorType;
-import com.tradeengine.TradeEngineAdapter.model.Order;
 import com.tradeengine.TradeEngineAdapter.services.layers.BasketSupportLayer;
 import com.tradeengine.common.entities.Price;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,30 +21,32 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import static com.tradeengine.DynamicRetailer.entities.RuleType.CUSTOMER_STATUS_CHANGED;
 import static com.tradeengine.common.Message.Status.*;
 
 @Component
 public class BasketRestService implements BasketSupportLayer {
+    Logger logger = Logger.getLogger(this.getClass().getName());
 
     private ProfileReaderRestService profileReaderRestService;
     private TradeEngineRestService tradeEngineRestService;
     private ShoppingHistoryRestService shoppingHistoryRestService;
+    private DynamicRetailerRestService dynamicRetailerRestService;
 
-//    @Autowired
-//    public BasketRestService(ShoppingHistoryRestService shoppingHistoryRestService, TradeEngineRestService tradeEngineRestService) {
-//        this.shoppingHistoryRestService = shoppingHistoryRestService;
-//        this.tradeEngineRestService = tradeEngineRestService;
-//    }
 
     @Autowired
     public BasketRestService(ProfileReaderRestService profileReaderRestService,
                              TradeEngineRestService tradeEngineRestService,
-                             ShoppingHistoryRestService shoppingHistoryRestService) {
+                             ShoppingHistoryRestService shoppingHistoryRestService,
+                             DynamicRetailerRestService dynamicRetailerRestService) {
         this.profileReaderRestService = profileReaderRestService;
         this.tradeEngineRestService = tradeEngineRestService;
         this.shoppingHistoryRestService = shoppingHistoryRestService;
+        this.dynamicRetailerRestService = dynamicRetailerRestService;
     }
 
     public Order createOrder(Basket basket) throws InvalidBasketException {
@@ -71,7 +73,7 @@ public class BasketRestService implements BasketSupportLayer {
         }
 
         if (!order.getFlowResults().isEmpty()) {
-            order.setGainedPoints(0l);
+            order.setGainedPoints(0);
             order.setDiscountList(new ArrayList<>());
             order.setStatus(FAILURE);
             throw new InvalidBasketException(order);
@@ -130,7 +132,7 @@ public class BasketRestService implements BasketSupportLayer {
 
         if (!collectedErrors.isEmpty()) {
             order.getFlowResults().addAll(collectedErrors);
-            order.setGainedPoints(0L);
+            order.setGainedPoints(0);
             order.setDiscountList(new ArrayList<>());
             order.setStatus(FAILURE);
             throw new ProductsAvailabilityException(order);
@@ -151,12 +153,17 @@ public class BasketRestService implements BasketSupportLayer {
 
     public Order calculateDiscount(Order order) {
         // Will be implemented in future
-        order.setGainedPoints(0L);
-        return order;
+        Order orderAfterDiscount = dynamicRetailerRestService.calculateDiscount(order);
+//        order.setGainedPoints(0L);
+        return orderAfterDiscount;
     }
 
     @Override
     public Order checkAccountBalance(Order order) throws NotEnoughAccountBalanceException {
+        CustomerDto customer = profileReaderRestService.getCustomer(order.getCustomerId());
+        if (customer.getCustomer().getCreditCard().getBalance() < order.getPrice().getPrice()) {
+            throw new NotEnoughAccountBalanceException();
+        }
 
         return order;
     }
@@ -164,6 +171,23 @@ public class BasketRestService implements BasketSupportLayer {
     @Override
     public Order updateCustomerStatus(Order order) {
         // zmienia ilosc pieniedzy i  tierlevel Customer'a
+        CustomerDto customer = profileReaderRestService.getCustomer(order.getCustomerId());
+        customer.getCustomer().getCreditCard().decreaseBalance(order.getPrice().getPrice());
+
+        final Optional<Discount> tierLevelChangedDiscount = order.getDiscountList().stream()
+                .filter(discount -> discount.getRuleType() == CUSTOMER_STATUS_CHANGED).findFirst();
+
+        // if tierlevel has changed
+        if (tierLevelChangedDiscount.isPresent() && customer.getCustomer().getTierLevel().getWeight() > tierLevelChangedDiscount.get().getUpgradedTierLevel().getWeight()) {
+            customer.getCustomer().setTierLevel(tierLevelChangedDiscount.get().getUpgradedTierLevel());
+        }
+
+        // if gainedPoints has changed
+        if (order.getGainedPoints() > 0) {
+            customer.getCustomer().setPoints(customer.getCustomer().getPoints() + order.getGainedPoints());
+        }
+
+        profileReaderRestService.updateCustomer(customer.getCustomer());
         return order;
     }
 
@@ -226,7 +250,7 @@ public class BasketRestService implements BasketSupportLayer {
             order = createOrder(basket);
             checkProductsAvailability(order);
             calculateOrder(order);
-            calculateDiscount(order);
+            order = calculateDiscount(order);
             checkAccountBalance(order);
             updateProductsAvailability(order);
             updateCustomerStatus(order);
@@ -239,6 +263,7 @@ public class BasketRestService implements BasketSupportLayer {
         } catch (NotEnoughAccountBalanceException e) {
 
         }
+
         return order;
 
     }

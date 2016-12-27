@@ -27,7 +27,7 @@ public class CompletedOrderInfo {
     private List<SoldProductInfo> soldProductsList;
     private Address address;
     private Long ShoppingHistoryId;
-    private Long gainedPoints;
+    private Integer gainedPoints;
     private Price cost;
 
     public List<SoldProductInfo> getSoldProductsList() {

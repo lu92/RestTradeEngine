@@ -2,9 +2,6 @@ package com.tradeengine.TradeEngineAdapter.end2endTest;
 
 import com.tradeengine.ProfileReader.CreateCustomerDto;
 import com.tradeengine.ProfileReader.CustomerDto;
-import com.tradeengine.ProfileReader.entities.Address;
-import com.tradeengine.ProfileReader.entities.CreditCard;
-import com.tradeengine.ProfileReader.mapper.ProfileReaderMapper;
 import com.tradeengine.ShoppingHistory.dto.ShoppingHistoryDto;
 import com.tradeengine.TestUtils;
 import com.tradeengine.TradeEngine.dto.*;
@@ -12,36 +9,26 @@ import com.tradeengine.TradeEngineAdapter.model.Basket;
 import com.tradeengine.TradeEngineAdapter.model.Order;
 import com.tradeengine.TradeEngineAdapter.model.dto.CustomerDTO;
 import com.tradeengine.TradeEngineAdapter.services.adapter.TradeEngineGateway;
-import com.tradeengine.TradeEngineAdapter.services.downlines.BasketRestService;
-import com.tradeengine.TradeEngineAdapter.services.downlines.ProfileReaderRestService;
-import com.tradeengine.TradeEngineAdapter.services.downlines.ShoppingHistoryRestService;
-import com.tradeengine.TradeEngineAdapter.services.downlines.TradeEngineRestService;
+import com.tradeengine.TradeEngineAdapter.services.downlines.*;
 import com.tradeengine.common.Message;
 import com.tradeengine.common.entities.Price;
-import org.fest.assertions.Assertions;
-import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
+import org.mockito.runners.MockitoJUnitRunner;
 
-import static com.tradeengine.ProfileReaderTestData.CREATE_CUSTOMER_DTO;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.logging.Logger;
+
+import static com.tradeengine.ProfileReaderTestData.*;
+import static com.tradeengine.TradeEngine.TradeEngineTestData.PHONES_CATEGORY_NAME;
+import static com.tradeengine.TradeEngine.TradeEngineTestData.PHONES_PRODUCT_SCHEME;
 import static com.tradeengine.TradeEngine.dto.productCriteria.ValueType.NUMBER;
 import static com.tradeengine.TradeEngine.dto.productCriteria.ValueType.TEXT;
 import static com.tradeengine.common.Message.Status.SUCCESS;
 import static org.fest.assertions.Assertions.assertThat;
-
-import org.junit.runners.MethodSorters;
-import org.mockito.runners.MockitoJUnitRunner;
-
-import static com.tradeengine.ProfileReaderTestData.*;
-import static com.tradeengine.TradeEngine.TradeEngineTestData.*;
-
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.Month;
-import java.util.Arrays;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 @RunWith(MockitoJUnitRunner.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -55,8 +42,9 @@ public class ShoppingTest {
     private ProfileReaderRestService profileReaderRestService = new ProfileReaderRestService();
     private TradeEngineRestService tradeEngineRestService = new TradeEngineRestService();
     private ShoppingHistoryRestService shoppingHistoryRestService = new ShoppingHistoryRestService();
+    private DynamicRetailerRestService dynamicRetailerRestService = new DynamicRetailerRestService();
     private BasketRestService basketRestService =
-            new BasketRestService(profileReaderRestService, tradeEngineRestService, shoppingHistoryRestService);
+            new BasketRestService(profileReaderRestService, tradeEngineRestService, shoppingHistoryRestService, dynamicRetailerRestService);
 
     private TradeEngineGateway tradeEngineGateway =
             new TradeEngineGateway(profileReaderRestService, tradeEngineRestService, shoppingHistoryRestService, basketRestService);
@@ -227,19 +215,18 @@ public class ShoppingTest {
 
         // validate first order price
         assertThat(savedOrder.getPrice()).isEqualTo(
-                Price.builder().amount(20000).tax(5000).price(25000).currency("PLN").build());
+                Price.builder().amount(19800).tax(4950).price(24750).currency("PLN").build());
 
         // validate shopping-history's price
         assertThat(customerWithShoppingHistory.getCustomer().getShoppingHistory().getTotalPrice()).isEqualTo(
-                Price.builder().amount(20000).tax(5000).price(25000).currency("PLN").build());
+                Price.builder().amount(19800).tax(4950).price(24750).currency("PLN").build());
     }
 
     @Test
     public void _08_validateCustomerBalance() throws IOException {
         double balance = customerDto.getCustomer().getCreditCard().getBalance();
         CustomerDto customer = tradeEngineGateway.getCustomer(customerDto.getCustomer().getCustomerId());
-        assertThat(customer.getCustomer().getCreditCard().getBalance()).isEqualTo(balance - 25000);
-
+        assertThat(customer.getCustomer().getCreditCard().getBalance()).isEqualTo(balance - 24750);
     }
 
     @Test
@@ -298,12 +285,21 @@ public class ShoppingTest {
 
         // validate second order price
         assertThat(savedOrder.getPrice()).isEqualTo(
-                Price.builder().amount(27000).tax(7250).price(34250).currency("PLN").build());
+                Price.builder().amount(26730.0).tax(7177.5).price(33907.5).currency("PLN").build());
 
         // validate shopping-history's price
         assertThat(customerWithShoppingHistory.getCustomer().getShoppingHistory().getTotalPrice()).isEqualTo(
-                Price.builder().amount(47000).tax(12250).price(59250).currency("PLN").build());
+                Price.builder().amount(46530.0).tax(12127.5).price(58657.5).currency("PLN").build());
     }
+
+    @Test
+    public void _11_validateCustomerBalance() throws IOException {
+        double balance = customerDto.getCustomer().getCreditCard().getBalance();
+        CustomerDto customer = tradeEngineGateway.getCustomer(customerDto.getCustomer().getCustomerId());
+        assertThat(customer.getCustomer().getCreditCard().getBalance()).isEqualTo(balance - 58657.5);
+    }
+
+
 
 
 }

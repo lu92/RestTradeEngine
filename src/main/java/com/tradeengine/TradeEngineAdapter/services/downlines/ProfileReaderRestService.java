@@ -19,6 +19,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.tradeengine.common.Message.Status.FAILURE;
 import static com.tradeengine.common.Message.Status.SUCCESS;
@@ -60,14 +62,27 @@ public class ProfileReaderRestService implements CustomerSupportLayer {
 
     @Override
     public CustomerDto updateCustomer(CustomerInfo customer) {
-        HttpHeaders headers = new HttpHeaders();
-//        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON_UTF8));
-        headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
-        HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.add("Content-Type", MediaType.APPLICATION_JSON.toString());
+//        headers.add("Accept", MediaType.APPLICATION_JSON.toString());
+//        HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
+//
+//        ResponseEntity<CustomerDto> customerDtoResponseEntity =
+//                restTemplate.exchange(PROFILE_READER_BASE_URL, HttpMethod.PUT, entity, CustomerDto.class, customer);
+//        return customerDtoResponseEntity.getBody();
 
-        ResponseEntity<CustomerDto> customerDtoResponseEntity =
-                restTemplate.exchange(PROFILE_READER_BASE_URL, HttpMethod.PUT, entity, CustomerDto.class, customer);
-        return customerDtoResponseEntity.getBody();
+//        final String uri = "http://localhost:8080/springrestexample/employees/{id}";
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("id", "2");
+        params.put("Content-Type", MediaType.APPLICATION_JSON.toString());
+        params.put("Accept", MediaType.APPLICATION_JSON.toString());
+
+//        EmployeeVO updatedEmployee = new EmployeeVO(2, "New Name", "Gilly", "test@email.com");
+
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.put (PROFILE_READER_BASE_URL, customer, params);
+        return null;
     }
 
     @Override

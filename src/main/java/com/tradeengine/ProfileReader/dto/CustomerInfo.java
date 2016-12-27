@@ -8,12 +8,14 @@ import com.tradeengine.ProfileReader.entities.Address;
 import com.tradeengine.ProfileReader.entities.CreditCard;
 import com.tradeengine.ProfileReader.entities.TierLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class CustomerInfo {

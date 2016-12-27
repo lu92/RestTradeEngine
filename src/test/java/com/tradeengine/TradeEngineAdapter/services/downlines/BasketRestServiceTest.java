@@ -64,7 +64,7 @@ public class BasketRestServiceTest {
         assertThat(order.getAddress()).isEqualTo(address);
         assertThat(order.getPrice()).isEqualTo(new Price(0, 0, 0, "PLN"));
         assertThat(order.getFlowResults()).containsExactly(new Error(null, "", "Basket is Empty!", ErrorType.EMPTY_BASKET));
-        assertThat(order.getGainedPoints()).isEqualTo(0L);
+        assertThat(order.getGainedPoints()).isEqualTo(0);
         assertThat(order.getDiscountList()).isEmpty();
         assertThat(order.getStatus()).isEqualTo(Message.Status.FAILURE);
     }
@@ -92,7 +92,7 @@ public class BasketRestServiceTest {
         assertThat(order.getFlowResults()).containsExactly(
                 new Error(1L, _IPHONE_6S.getCommercialName(), "", ErrorType.PRODUCT_IS_NOT_AVAILABLE),
                 new Error(2L, _SGS7.getCommercialName(), "", ErrorType.PRODUCT_IS_NOT_AVAILABLE));
-        assertThat(order.getGainedPoints()).isEqualTo(0L);
+        assertThat(order.getGainedPoints()).isEqualTo(0);
         assertThat(order.getDiscountList()).isEmpty();
         assertThat(order.getStatus()).isEqualTo(Message.Status.FAILURE);
     }
@@ -119,7 +119,7 @@ public class BasketRestServiceTest {
         assertThat(order.getPrice()).isEqualTo(new Price(0, 0, 0, "PLN"));
         assertThat(order.getFlowResults()).containsExactly(
                 new Error(2L, _SGS7.getCommercialName(), "", ErrorType.PRODUCT_IS_NOT_AVAILABLE));
-        assertThat(order.getGainedPoints()).isEqualTo(0L);
+        assertThat(order.getGainedPoints()).isEqualTo(0);
         assertThat(order.getDiscountList()).isEmpty();
         assertThat(order.getStatus()).isEqualTo(Message.Status.FAILURE);
     }
@@ -150,7 +150,7 @@ public class BasketRestServiceTest {
 //                new Error(1L, _IPHONE_6S.getCommercialName(), "", ErrorType.NOT_ENOUGH_AMOUNT_OF_PRODUCT),
 //                new Error(2L, _SGS7.getCommercialName(), "", ErrorType.PRODUCT_IS_NOT_AVAILABLE)
         );
-        assertThat(order.getGainedPoints()).isEqualTo(0L);
+        assertThat(order.getGainedPoints()).isEqualTo(0);
         assertThat(order.getDiscountList()).isEmpty();
         assertThat(order.getStatus()).isEqualTo(Message.Status.FAILURE);
     }
@@ -176,7 +176,7 @@ public class BasketRestServiceTest {
         assertThat(order.getPrice()).isEqualTo(new Price(0, 0, 0, "PLN"));
         assertThat(order.getFlowResults()).containsOnly(
                 new Error(1L, _IPHONE_6S.getCommercialName(), "", ErrorType.NOT_ENOUGH_AMOUNT_OF_PRODUCT));
-        assertThat(order.getGainedPoints()).isEqualTo(0L);
+        assertThat(order.getGainedPoints()).isEqualTo(0);
         assertThat(order.getDiscountList()).isEmpty();
         assertThat(order.getStatus()).isEqualTo(Message.Status.FAILURE);
     }
@@ -204,7 +204,7 @@ public class BasketRestServiceTest {
         assertThat(order.getAddress()).isEqualTo(address);
         assertThat(order.getPrice()).isEqualTo(new Price(42000, 11000, 53000, "PLN"));
         assertThat(order.getFlowResults()).isEmpty();
-        assertThat(order.getGainedPoints()).isEqualTo(0L);
+        assertThat(order.getGainedPoints()).isEqualTo(0);
         assertThat(order.getDiscountList()).isEmpty();
         assertThat(order.getStatus()).isEqualTo(Message.Status.SUCCESS);
     }

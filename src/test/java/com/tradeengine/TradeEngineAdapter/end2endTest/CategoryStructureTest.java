@@ -4,10 +4,7 @@ import com.tradeengine.TestUtils;
 import com.tradeengine.TradeEngine.dto.CategoryDto;
 import com.tradeengine.TradeEngine.dto.CreateCategoryDto;
 import com.tradeengine.TradeEngineAdapter.services.adapter.TradeEngineGateway;
-import com.tradeengine.TradeEngineAdapter.services.downlines.BasketRestService;
-import com.tradeengine.TradeEngineAdapter.services.downlines.ProfileReaderRestService;
-import com.tradeengine.TradeEngineAdapter.services.downlines.ShoppingHistoryRestService;
-import com.tradeengine.TradeEngineAdapter.services.downlines.TradeEngineRestService;
+import com.tradeengine.TradeEngineAdapter.services.downlines.*;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,8 +28,9 @@ public class CategoryStructureTest {
     private ProfileReaderRestService profileReaderRestService = new ProfileReaderRestService();
     private TradeEngineRestService tradeEngineRestService = new TradeEngineRestService();
     private ShoppingHistoryRestService shoppingHistoryRestService = new ShoppingHistoryRestService();
+    private DynamicRetailerRestService dynamicRetailerRestService = new DynamicRetailerRestService();
     private BasketRestService basketRestService =
-            new BasketRestService(profileReaderRestService, tradeEngineRestService, shoppingHistoryRestService);
+            new BasketRestService(profileReaderRestService, tradeEngineRestService, shoppingHistoryRestService, dynamicRetailerRestService);
 
     private TradeEngineGateway tradeEngineGateway =
             new TradeEngineGateway(profileReaderRestService, tradeEngineRestService, shoppingHistoryRestService, basketRestService);
